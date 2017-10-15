@@ -1,0 +1,11 @@
+# MacOS
+*.DS_Store
+
+# Intellij
+.idea
+*.iml
+*.iws
+*.ipr
+
+# Project logs
+*.log
