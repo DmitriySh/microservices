@@ -4,45 +4,56 @@ Microservices
 
 DevOps course, practices with [Google Cloud Platform](https://cloud.google.com/).
 
+## Homework 15
 
-Make `gcloud` default auth
+Use [Docker](https://www.docker.com/) to create instance in GCE and publish docker image in [Docker Hub](https://hub.docker.com/)
+
+ - Configure `gcloud` and create new GCE project `docker`
+```bash
+~$ gcloud init
 ~$ gcloud auth application-default login
+```
 
-
-Create instance in GCE by docker
+ - Create instance in GCE by `docker-machine`
+```bash
 ~$ docker-machine create --driver google \
---google-project docker-181710 \
+--google-project <project_name> \
 --google-zone europe-west1-b \
 --google-machine-type f1-micro \
 --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
 <docker_instance_name>
+```
 
-
-Check machines running Docker
+ - Display machines running Docker
+```bash
 ~$ docker-machine ls
 NAME                     ACTIVE   DRIVER   STATE     URL                        SWARM   DOCKER        ERRORS
-<docker_instance_name>   *        google   Running   tcp://35.195.32.106:2376           v17.09.0-ce
+<docker_instance_name>   *        google   Running   tcp://<host_ip>:2376           v17.09.0-ce
+```
 
-
-Build docker image
-~$ eval $(docker-machine env docker-host)
-~$ docker build -t reddit:latest .
+ - Build docker image
+```bash
+~$ eval $(docker-machine env <docker_instance_name>)
+~$ docker build -t reddit:latest ./
 ~$ docker images -a
+```
 
-
-Run docker container
+ - Run docker container
+```bash
 $ docker run --name reddit -d --network=host reddit:latest
+```
 
-
-Create firewall rule for reddit app
+ - Create firewall rule for reddit app
+```bash
 ~$ gcloud compute firewall-rules create reddit-app \
 --allow tcp:9292 --priority=65534 \
 --target-tags=docker-machine \
 --description="Allow TCP connections" \
 --direction=INGRESS
+```
 
-
-Docker machine needs to have rules `docker-machines` and `reddit-app`
+ - Docker machine needs to have rules `docker-machines` and `reddit-app`
+```bash
 ~$ gcloud compute firewall-rules list
 NAME                    NETWORK  DIRECTION  PRIORITY  ALLOW                         DENY
 default-allow-icmp      default  INGRESS    65534     icmp
@@ -51,20 +62,21 @@ default-allow-rdp       default  INGRESS    65534     tcp:3389
 default-allow-ssh       default  INGRESS    65534     tcp:22
 docker-machines         default  INGRESS    1000      tcp:2376
 reddit-app              default  INGRESS    65534     tcp:9292
+```
 
+ - Open URL [http://\<host_ip\>:9292](http://\<host_ip\>:9292) and test the app
 
-Open URL http://35.195.32.106:9292
-
-
-Auth and push docker image to Docker Hub
+ - Auth and push docker image to [Docker Hub](https://hub.docker.com/)
+```bash
 ~$ docker login
 ~$ docker tag reddit:latest <user-login>/otus-reddit:1.0
 ~$ docker push <user-login>/otus-reddit:1.0 
 The push refers to a repository [docker.io/dashishmakov/otus-reddit]
 ...
 1.0: digest: sha256:6d60a3915efdd937a9ae0ad9e8c7b1fa2edc1a9d63000f9993cbcffa4fcca085 size: 3241
+```
 
-
-At the end remove the docker machine and romote instance
-~$ docker-machine rm docker-host
-
+- At the end remove the docker machine and remote instance
+```bash
+~$ docker-machine rm <docker_instance_name>
+```
