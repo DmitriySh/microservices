@@ -17,7 +17,7 @@ Use [Docker](https://www.docker.com/) to create instance in GCE and publish dock
  - Create instance in GCE by `docker-machine`
 ```bash
 ~$ docker-machine create --driver google \
---google-project <project_name> \
+--google-project <project_id> \
 --google-zone europe-west1-b \
 --google-machine-type f1-micro \
 --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
