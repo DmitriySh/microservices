@@ -67,7 +67,7 @@ reddit-app              default  INGRESS    65534     tcp:9292
  - Open URL [http://\<host_ip\>:9292](http://\<host_ip\>:9292) and test the app
  - Connect to the remote instance by ssh
  ```bash
-~$ docker-machine ssh docker-host
+~$ docker-machine ssh <docker_instance_name>
 
 Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.10.0-37-generic x86_64)
  * Documentation:  https://help.ubuntu.com
