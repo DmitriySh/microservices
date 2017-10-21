@@ -67,7 +67,7 @@ reddit-app              default  INGRESS    65534     tcp:9292
 
  - Open URL [http://\<host_ip\>:9292](http://\<host_ip\>:9292) and test the app
  - Connect to the remote instance by ssh
- ```bash
+```bash
 ~$ docker-machine ssh <docker_instance_name>
 
 Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.10.0-37-generic x86_64)
@@ -83,7 +83,7 @@ Description:	Ubuntu 16.04.3 LTS
 ```bash
 ~$ docker login
 ~$ docker tag reddit:latest <user-login>/otus-reddit:1.0
-~$ docker push <user-login>/otus-reddit:1.0 
+~$ docker push <user-login>/otus-reddit:1.0
 The push refers to a repository [docker.io/dashishmakov/otus-reddit]
 ...
 1.0: digest: sha256:6d60a3915efdd937a9ae0ad9e8c7b1fa2edc1a9d63000f9993cbcffa4fcca085 size: 3241
@@ -161,38 +161,38 @@ f8d620170918        mongo:latest               "docker-entrypoint..."   56 secon
 ~$ docker kill $(docker ps -q)
 ```
 
- - If you want to change the network aliases used for communication between applications 
+ - If you want to change the network aliases used for communication between applications
 you should define new env values for each container
 ```bash
-~$ docker run -d --network=reddit --network-alias=post_db --network-alias=net_comment_db \ 
- -e POST_SERVICE_HOST='net_post' \ 
- -e COMMENT_SERVICE_HOST='net_comment' \ 
- -e COMMENT_DATABASE_HOST='net_comment_db' \ 
+~$ docker run -d --network=reddit --network-alias=post_db --network-alias=net_comment_db \
+ -e POST_SERVICE_HOST='net_post' \
+ -e COMMENT_SERVICE_HOST='net_comment' \
+ -e COMMENT_DATABASE_HOST='net_comment_db' \
 mongo:latest
 
-~$ docker run -d --network=reddit  --network-alias=net_post \ 
- -e POST_SERVICE_HOST='net_post' \ 
- -e COMMENT_SERVICE_HOST='net_comment' \ 
- -e COMMENT_DATABASE_HOST='net_comment_db' \ 
+~$ docker run -d --network=reddit  --network-alias=net_post \
+ -e POST_SERVICE_HOST='net_post' \
+ -e COMMENT_SERVICE_HOST='net_comment' \
+ -e COMMENT_DATABASE_HOST='net_comment_db' \
 dashishmakov/post:1.0
 
-~$ docker run -d --network=reddit --network-alias=net_comment \ 
- -e POST_SERVICE_HOST='net_post' \ 
- -e COMMENT_SERVICE_HOST='net_comment' \ 
+~$ docker run -d --network=reddit --network-alias=net_comment \
+ -e POST_SERVICE_HOST='net_post' \
+ -e COMMENT_SERVICE_HOST='net_comment' \
  -e COMMENT_DATABASE_HOST='net_comment_db' dashishmakov/comment:1.0
- 
-~$ docker run -d --network=reddit \ 
- -p 9292:9292 \ 
- -e POST_SERVICE_HOST='net_post' \ 
- -e COMMENT_SERVICE_HOST='net_comment' \ 
- -e COMMENT_DATABASE_HOST='net_comment_db' \ 
+
+~$ docker run -d --network=reddit \
+ -p 9292:9292 \
+ -e POST_SERVICE_HOST='net_post' \
+ -e COMMENT_SERVICE_HOST='net_comment' \
+ -e COMMENT_DATABASE_HOST='net_comment_db' \
 dashishmakov/ui:1.0
 ```
 
  - Open URL [http://<host_ip>:9292](http://<host_ip>:9292) and test the app
 
- - Docker images are big and usually much larger than they need to be. 
- True OS image runs either real hardware or virtualized hardware, but not inside a Docker container.  
+ - Docker images are big and usually much larger than they need to be.
+ True OS image runs either real hardware or virtualized hardware, but not inside a Docker container.
  Inside a container you don't want a full system. Use other docker files to build image 2.0 (ubuntu:16.04), image 3.0 (alpine:3.6)
  and test them with 1.0 (ruby:2.2)
 ```bash
@@ -213,7 +213,7 @@ dashishmakov/ui        1.0                 0594004be8ef        3 days ago       
 ```bash
 ~$ docker volume create reddit_db
 ~$ docker volume ls
-~$ docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db --mount source=reddit_db,target=/data/db mongo:latest 
+~$ docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db --mount source=reddit_db,target=/data/db mongo:latest
 ~$ docker run -d --network=reddit --network-alias=post dashishmakov/post:1.0
 ~$ docker run -d --network=reddit --network-alias=comment dashishmakov/comment:1.0
 ~$ docker run -d --network=reddit -p 9292:9292 dashishmakov/ui:1.0
@@ -231,8 +231,8 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
 ```
 
  - Open URL [http://<host_ip>:9292](http://<host_ip>:9292), test the app and posts
- 
+
  - At the end remove the docker machine and remote instance
- ```bash
+```bash
  ~$ docker-machine rm <docker_instance_name>
- ```
+```
