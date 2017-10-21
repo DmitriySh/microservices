@@ -113,7 +113,7 @@ NAME          ACTIVE   DRIVER   STATE     URL                        SWARM   DOC
 ~$ eval $(docker-machine env <docker_instance_name>)
 ```
 
- - Download the latest MongoDB image
+ - Download the latest [MongoDB](https://www.mongodb.com) image
 ```bash
 ~$ docker pull mongo:latest
 ```
