@@ -121,7 +121,7 @@ NAME          ACTIVE   DRIVER   STATE     URL                        SWARM   DOC
  - Build images and test them
 ```bash
 ~$ cp ui/Dockerfile_1_0 ui/Dockerfile
-~$ docker build -t dashishmakov/ui:1.0 ./ui/
+~$ docker build -t dashishmakov/ui:1.0 -f ./ui/Dockerfile_1_0 ./ui/
 ~$ docker build -t dashishmakov/comment:1.0 ./comment/
 ~$ docker build -t dashishmakov/post:1.0 ./post-py/
 ~$ docker images -a | grep dashishmakov
@@ -196,10 +196,8 @@ dashishmakov/ui:1.0
  Inside a container you don't want a full system. Use other docker files to build image 2.0 (ubuntu:16.04), image 3.0 (alpine:3.6)
  and test them with 1.0 (ruby:2.2)
 ```bash
-~$ cp ui/Dockerfile_2_0 ui/Dockerfile
-~$ docker build -t dashishmakov/ui:2.0 ./ui/
-~$ cp ui/Dockerfile_3_0 ui/Dockerfile
-~$ docker build -t dashishmakov/ui:3.0 ./ui/
+~$ docker build -t dashishmakov/ui:2.0 -f ./ui/Dockerfile_2_0 ./ui/
+~$ docker build -t dashishmakov/ui:3.0 -f ./ui/Dockerfile_3_0 ./ui/
 ~$ docker images dashishmakov/ui
 dashishmakov/ui        3.0                 086371a13621        25 seconds ago       203MB
 dashishmakov/ui        2.0                 caa68976405a        About an hour ago    454MB
