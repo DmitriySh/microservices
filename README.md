@@ -14,7 +14,8 @@ Use [Docker](https://www.docker.com/) to create instance in GCE and publish dock
 ~$ gcloud auth application-default login
 ```
 
- - Create instance in GCE by `docker-machine` and set up commands to the environment for the Docker client
+ - Create instance in GCE by `docker-machine` and change the environment variables for the `Docker Client`.
+  It should connect to remote `Docker Engine`.
 ```bash
 ~$ docker-machine create --driver google \
 --google-project <project_id> \
@@ -89,14 +90,15 @@ The push refers to a repository [docker.io/dashishmakov/otus-reddit]
 1.0: digest: sha256:6d60a3915efdd937a9ae0ad9e8c7b1fa2edc1a9d63000f9993cbcffa4fcca085 size: 3241
 ```
 
-- At the end remove the docker machine and remote instance
+ - At the end remove the docker machine and remote instance
 ```bash
 ~$ docker-machine rm <docker_instance_name>
 ```
 
 ## Homework 16
 
- - Create instance in GCE by `docker-machine`, test it and set up commands to the environment for the Docker client
+ - Create instance in GCE by `docker-machine` and change the environment variables for the `Docker Client`.
+  It should connect to remote `Docker Engine`.
 ```bash
 ~$ docker-machine create --driver google \
 --google-project <project_id> \
