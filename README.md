@@ -238,3 +238,4 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
 ```bash
  ~$ docker-machine rm <docker_instance_name>
 ```
+branch-03
