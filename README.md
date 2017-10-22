@@ -92,6 +92,7 @@ The push refers to a repository [docker.io/dashishmakov/otus-reddit]
 
  - At the end remove the docker machine and remote instance
 ```bash
+~$ docker-machine kill <docker_instance_name>
 ~$ docker-machine rm <docker_instance_name>
 ```
 
@@ -236,6 +237,7 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
 
  - At the end remove the docker machine and remote instance
 ```bash
- ~$ docker-machine rm <docker_instance_name>
+~$ docker-machine kill <docker_instance_name>
+~$ docker-machine rm <docker_instance_name>
 ```
 branch-03
