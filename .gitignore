@@ -1,6 +1,9 @@
 # MacOS
 *.DS_Store
 
+# Docker compose env
+.env
+
 # Intellij
 .idea
 *.iml
