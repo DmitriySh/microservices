@@ -239,4 +239,155 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
 ~$ docker-machine kill <docker_instance_name>
 ~$ docker-machine rm <docker_instance_name>
 ```
-branch-03
+
+## Homework 17
+
+
+ - Create instance in GCE by `docker-machine` and change the environment variables for the `Docker Client`.
+  It should connect to remote `Docker Engine`.
+```bash
+~$ docker-machine create --driver google \
+   --google-project  docker-183019 \
+   --google-zone europe-west1-b \
+   --google-machine-type g1-small \
+   --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
+   docker-host
+
+~$ docker-machine ls
+NAME          ACTIVE   DRIVER   STATE     URL                        SWARM   DOCKER        ERRORS
+docker-host   *        google   Running   tcp://<host_ip>:2376           v17.10.0-ce
+```
+
+ - Run container `net_test` with `none` network driver that has timer and will deleted after 100 sec. 
+ Container has Loopback network interface only.
+```bash
+~$ docker run --network none --rm -d --name net_test joffotron/docker-net-tools -c "sleep 100"
+~$ docker exec -ti net_test ifconfig
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+```
+
+ - Run container `net_test` with `host` network driver and test `ifconfig` outputs
+```bash
+~$ docker run --network host --rm -d --name net_test joffotron/docker-net-tools -c "sleep 100"
+~$ docker exec -ti net_test ifconfig
+~$ docker-machine ssh docker-host ifconfig
+```
+
+ - Create new `bridge` network (it is a default network in the docker and you no need to define key '--driver' explicitly, but just do it)
+```bash
+~$ docker network create reddit --driver bridge
+~$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+e7a048591474        bridge              bridge              local
+e5e41b5bb7b9        host                host                local
+a9aca5eaa1f3        none                null                local
+df49b0667c1c        reddit              bridge              local
+```
+
+ - Run containers, bind each of them to the network `reddit` and set network aliases because services search by DNS names from env variables
+```bash
+~$ docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db mongo:latest
+~$ docker run -d --network=reddit --network-alias=post dashishmakov/post:1.0
+~$ docker run -d --network=reddit --network-alias=comment dashishmakov/comment:1.0 
+~$ docker run -d --network=reddit -p 9292:9292 dashishmakov/ui:1.0
+```
+
+- Open URL [http://<host_ip>:9292](http://<host_ip>:9292) and test the app
+
+- Right now all services use one network interface.
+Let's create different network interfaces and separate `ui` from `db`  
+```bash
+~$ docker network create back_net --subnet=10.0.2.0/24
+~$ docker network create front_net --subnet=10.0.1.0/24
+~$ docker run -d --network=front_net -p 9292:9292 --name ui dashishmakov/ui:1.0 
+~$ docker run -d --network=back_net --name comment dashishmakov/comment:1.0
+~$ docker run -d --network=back_net --name post dashishmakov/post:1.0
+~$ docker run -d --network=back_net --name mongo_db --network-alias=post_db --network-alias=comment_db mongo:latest
+~$ docker network connect front_net post
+~$ docker network connect front_net comment
+```
+
+- Open URL [http://<host_ip>:9292](http://<host_ip>:9292) and test the app
+
+
+- Let's look at the current Linux network stack on virtual instance in GCE
+```bash
+~$ docker-machine ssh docker-host
+~$ sudo apt-get update && sudo apt-get install bridge-utils
+~$ sudo docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+310a8bd102cf        back_net            bridge              local
+e7a048591474        bridge              bridge              local
+593663a63d49        front_net           bridge              local
+e5e41b5bb7b9        host                host                local
+a9aca5eaa1f3        none                null                local
+df49b0667c1c        reddit              bridge              local
+
+~$ ifconfig | grep br
+br-310a8bd102cf Link encap:Ethernet  HWaddr 02:42:83:55:32:14
+br-593663a63d49 Link encap:Ethernet  HWaddr 02:42:1d:7a:48:6c
+br-df49b0667c1c Link encap:Ethernet  HWaddr 02:42:96:6c:be:1d
+
+~$ brctl show br-593663a63d49
+bridge name	bridge id		STP enabled	interfaces
+br-593663a63d49		8000.02421d7a486c	no		veth3b6ae49
+							vethc70235b
+							vethcf4e66b
+```
+
+ - Show iptables
+```bash
+~$ sudo iptables -nL -t nat
+...
+Chain DOCKER (2 references)
+target     prot opt source               destination
+RETURN     all  --  0.0.0.0/0            0.0.0.0/0
+RETURN     all  --  0.0.0.0/0            0.0.0.0/0
+RETURN     all  --  0.0.0.0/0            0.0.0.0/0
+RETURN     all  --  0.0.0.0/0            0.0.0.0/0
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:9292 to:10.0.1.2:9292
+```
+
+ - Find the `docker-proxy` process listening on TCP port 9292
+```bash
+~$ ps ax | grep docker-proxy
+```
+
+ - Stop and remove running containers
+```bash
+~$ docker kill $(docker ps -q)
+~$ docker rm $(docker ps -aq)
+```
+
+#### docker-compose
+
+A service definition contains configuration which will be applied to each container started for that service, 
+much like passing command-line parameters to `docker run`, `docker network`, `docker volume`
+
+ - Set environment variables for `docker-compose`
+```bash
+~$ export USERNAME=dashishmakov
+~$ cp .env.example .env
+~$ docker-compose up -d
+~$ docker-compose ps
+          Name                       Command             State           Ports
+---------------------------------------------------------------------------------------
+microservices_comment_1    puma                          Up
+microservices_mongo_db_1   docker-entrypoint.sh mongod   Up      27017/tcp
+microservices_post_1       python3 post_app.py           Up
+microservices_ui_1         puma                          Up      0.0.0.0:9292->9292/tcp
+``` 
+
+ - At the end remove docker containers and remote instance of docker machine
+```bash
+~$ docker-compose kill
+~$ docker-compose rm
+~$ docker-machine kill <docker_instance_name>
+~$ docker-machine rm <docker_instance_name>
+```
