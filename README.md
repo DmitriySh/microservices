@@ -221,9 +221,10 @@ dashishmakov/ui        1.0                 0594004be8ef        3 days ago       
 ~$ docker run -d --network=reddit -p 9292:9292 dashishmakov/ui:1.0
 ```
 
- - Restart running containers
+ - Start new container with volume
 ```bash
-~$ docker restart $(docker ps -q)
+~$ docker kill <ui_container_id>
+~$ docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db --mount source=reddit_db,target=/data/db mongo:latest
 ~$ docker ps
 CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                    NAMES
 d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours ago         Up 15 seconds       0.0.0.0:9292->9292/tcp   friendly_yonath
