@@ -92,6 +92,7 @@ The push refers to a repository [docker.io/dashishmakov/otus-reddit]
 
  - At the end remove the docker machine and remote instance
 ```bash
+~$ docker-machine kill <docker_instance_name>
 ~$ docker-machine rm <docker_instance_name>
 ```
 
@@ -122,7 +123,6 @@ NAME          ACTIVE   DRIVER   STATE     URL                        SWARM   DOC
 
  - Build images and test them
 ```bash
-~$ cp ui/Dockerfile_1_0 ui/Dockerfile
 ~$ docker build -t dashishmakov/ui:1.0 -f ./ui/Dockerfile_1_0 ./ui/
 ~$ docker build -t dashishmakov/comment:1.0 ./comment/
 ~$ docker build -t dashishmakov/post:1.0 ./post-py/
@@ -236,5 +236,6 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
 
  - At the end remove the docker machine and remote instance
 ```bash
- ~$ docker-machine rm <docker_instance_name>
+~$ docker-machine kill <docker_instance_name>
+~$ docker-machine rm <docker_instance_name>
 ```
