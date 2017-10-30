@@ -201,7 +201,7 @@ dashishmakov/ui:1.0
 ~$ docker build -t dashishmakov/ui:2.0 -f ./ui/Dockerfile_2_0 ./ui/
 ~$ docker build -t dashishmakov/ui:3.0 -f ./ui/Dockerfile_3_0 ./ui/
 ~$ docker images dashishmakov/ui
-dashishmakov/ui        3.0                 086371a13621        25 seconds ago       203MB
+dashishmakov/ui        3.0                 086371a13621        25 seconds ago       199MB
 dashishmakov/ui        2.0                 caa68976405a        About an hour ago    454MB
 dashishmakov/ui        1.0                 0594004be8ef        3 days ago           779MB
 ```
@@ -223,7 +223,7 @@ dashishmakov/ui        1.0                 0594004be8ef        3 days ago       
 
  - Start new container with volume
 ```bash
-~$ docker kill <ui_container_id>
+~$ docker kill <mongo_container_id>
 ~$ docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db --mount source=reddit_db,target=/data/db mongo:latest
 ~$ docker ps
 CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                    NAMES
