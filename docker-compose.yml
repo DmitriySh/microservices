@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   mongo_db:
-    image: mongo:3.2
+    image: "mongo:${MONGO_VERSION}"
     volumes:
       - post_db:/data/db
     networks:
@@ -15,7 +15,7 @@ services:
       dockerfile: "${UI_DOCKERFILE}"
     image: "${USERNAME}/ui:${UI_VERSION}"
     ports:
-      - "${UI_PORT}:${UI_PORT}/tcp"
+      - "${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp"
     networks:
       - front_net
   post:
