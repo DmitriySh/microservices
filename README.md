@@ -392,3 +392,94 @@ microservices_ui_1         puma                          Up      0.0.0.0:9292->9
 ~$ docker-machine kill <docker_instance_name>
 ~$ docker-machine rm <docker_instance_name>
 ```
+
+## Homework 21
+
+1.1) [Prometheus](https://prometheus.io) is a powerful time-series monitoring service, providing a flexible platform for 
+monitoring software products. Let's run and get acquainted with this product.
+
+ - create instance in GCE by `docker-machine`. Change the environment variables for the Docker Client and connect to the remote Docker Engine
+ ```bash
+$ docker-machine create --driver google \
+--google-project infra-179717 \
+--google-machine-image https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts \
+--google-machine-type n1-standard-1 \
+--google-zone europe-west1-b \
+vm1
+
+$ eval $(docker-machine env vm1)
+```
+
+ - check firewall-rules:
+```bash
+$ gcloud compute firewall-rules list
+NAME                    NETWORK  DIRECTION  PRIORITY  ALLOW                         DENY
+default-allow-icmp      default  INGRESS    65534     icmp
+default-allow-internal  default  INGRESS    65534     tcp:0-65535,udp:0-65535,icmp
+default-allow-rdp       default  INGRESS    65534     tcp:3389
+default-allow-ssh       default  INGRESS    65534     tcp:22
+docker-machines         default  INGRESS    1000      tcp:2376
+prometheus-default      default  INGRESS    1000      tcp:9090
+puma-default            default  INGRESS    1000      tcp:9292
+``` 
+
+ - create if you do not have one of them
+```bash
+~$ gcloud compute firewall-rules create default-allow-ssh --allow tcp:22 --priority=65534 --description="Allow SSH connections" --direction=INGRESS
+~$ gcloud compute firewall-rules create prometheus-default --allow tcp:9090
+~$ gcloud compute firewall-rules create puma-default --allow tcp:9292 
+```
+
+ - run [Prometheus](https://prometheus.io) from the DockerHub image
+```bash
+~$ docker run --rm -p 9090:9090 -d --name prometheus prom/prometheus
+~$ docker ps
+```
+
+ - Open URL [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and `[http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics)
+
+ - Stop docker instance [Prometheus](https://prometheus.io)
+```bash
+~$ docker stop prometheus
+``` 
+
+1.2) Prometheus will monitor all microservices, so we need a container with Prometheus that could communicate
+ over the network with all other services and config it in `docker-compose` file
+
+ - Set environment variables for `docker-compose`
+```bash
+~$ export USERNAME=<dockerhub_login>
+~$ cp .env.example .env
+```
+
+ - build custom images with [Prometheus](https://prometheus.io) and other microservices
+```bash
+~prometheus$ bash docker_build.sh
+~ui$ bash docker_build.sh
+~post-py$ bash docker_build.sh
+~comment$ bash docker_build.sh
+~$ docker images | grep dashishmakov
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+dashishmakov/ui           latest              817f7a305b9c        3 minutes ago       459MB
+dashishmakov/post         latest              99b7ead06d0e        26 minutes ago      102MB
+dashishmakov/comment      latest              f72817e1d2a7        27 minutes ago      778MB
+dashishmakov/prometheus   latest              e3e8ab8a856c        30 minutes ago      75.4MB
+``` 
+
+ - run all containers
+```bash
+~$ docker-compose up -d
+~$ docker-compose ps
+           Name                         Command               State           Ports
+--------------------------------------------------------------------------------------------
+microservices_comment_1      puma                             Up
+microservices_mongo_db_1     docker-entrypoint.sh mongod      Up      27017/tcp
+microservices_post_1         python3 post_app.py              Up      5000/tcp
+microservices_prometheus_1   /bin/prometheus -config.fi ...   Up      0.0.0.0:9090->9090/tcp
+microservices_ui_1           puma                             Up      0.0.0.0:9292->9292/tcp
+```
+
+ - Open URL [http://<host_ip>:9292/targets](http://<host_ip>:9292/targets), [http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics) and test the app
+ - `<gce-vm-ip>` is an external host ip: `docker-machine ip vm1`
+
+1.3) ...
