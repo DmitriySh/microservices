@@ -15,11 +15,13 @@ services:
       - "${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp"
     networks:
       - front_net
+
   post:
     image: "${USERNAME}/post"
     networks:
       - back_net
       - front_net
+
   comment:
     image: "${USERNAME}/comment"
     networks:
