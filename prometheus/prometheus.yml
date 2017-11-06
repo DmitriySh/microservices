@@ -1,3 +1,4 @@
+---
 global:
   scrape_interval: '5s'
 
@@ -16,4 +17,3 @@ scrape_configs:
     static_configs:
       - targets:
         - 'comment:9292'
-
