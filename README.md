@@ -90,12 +90,6 @@ The push refers to a repository [docker.io/dashishmakov/otus-reddit]
 1.0: digest: sha256:6d60a3915efdd937a9ae0ad9e8c7b1fa2edc1a9d63000f9993cbcffa4fcca085 size: 3241
 ```
 
- - At the end remove the docker machine and remote instance
-```bash
-~$ docker-machine kill <docker_instance_name>
-~$ docker-machine rm <docker_instance_name>
-```
-
 ## Homework 16
 
  - Create instance in GCE by `docker-machine` and change the environment variables for the `Docker Client`.
@@ -234,12 +228,6 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
 ```
 
  - Open URL [http://<host_ip>:9292](http://<host_ip>:9292), test the app and posts
-
- - At the end remove the docker machine and remote instance
-```bash
-~$ docker-machine kill <docker_instance_name>
-~$ docker-machine rm <docker_instance_name>
-```
 
 ## Homework 17
 
@@ -385,14 +373,6 @@ microservices_post_1       python3 post_app.py           Up
 microservices_ui_1         puma                          Up      0.0.0.0:9292->9292/tcp
 ``` 
 
- - At the end remove docker containers and remote instance of docker machine
-```bash
-~$ docker-compose kill
-~$ docker-compose rm
-~$ docker-machine kill <docker_instance_name>
-~$ docker-machine rm <docker_instance_name>
-```
-
 ## Homework 21
 
 1.1) [Prometheus](https://prometheus.io) is a powerful time-series monitoring service, providing a flexible platform for 
@@ -483,3 +463,18 @@ microservices_ui_1           puma                             Up      0.0.0.0:92
  - `<gce-vm-ip>` is an external host ip: `docker-machine ip vm1`
 
 1.3) ...
+
+ - ?
+
+
+
+
+---
+
+At the end remove docker containers and remote instance of docker machine
+```bash
+~$ docker-compose kill
+~$ docker-compose rm
+~$ docker-machine kill <docker_instance_name>
+~$ docker-machine rm <docker_instance_name>
+```
