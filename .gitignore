@@ -12,3 +12,4 @@
 
 # Project logs
 *.log
+*/build_info.txt
