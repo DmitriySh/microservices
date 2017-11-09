@@ -283,18 +283,18 @@ df49b0667c1c        reddit              bridge              local
 ```bash
 ~$ docker run -d --network=reddit --network-alias=post_db --network-alias=comment_db mongo:latest
 ~$ docker run -d --network=reddit --network-alias=post dashishmakov/post:1.0
-~$ docker run -d --network=reddit --network-alias=comment dashishmakov/comment:1.0 
+~$ docker run -d --network=reddit --network-alias=comment dashishmakov/comment:1.0
 ~$ docker run -d --network=reddit -p 9292:9292 dashishmakov/ui:1.0
 ```
 
 - Open URL [http://<host_ip>:9292](http://<host_ip>:9292) and test the app
 
 - Right now all services use one network interface.
-Let's create different network interfaces and separate `ui` from `db`  
+Let's create different network interfaces and separate `ui` from `db`
 ```bash
 ~$ docker network create back_net --subnet=10.0.2.0/24
 ~$ docker network create front_net --subnet=10.0.1.0/24
-~$ docker run -d --network=front_net -p 9292:9292 --name ui dashishmakov/ui:1.0 
+~$ docker run -d --network=front_net -p 9292:9292 --name ui dashishmakov/ui:1.0
 ~$ docker run -d --network=back_net --name comment dashishmakov/comment:1.0
 ~$ docker run -d --network=back_net --name post dashishmakov/post:1.0
 ~$ docker run -d --network=back_net --name mongo_db --network-alias=post_db --network-alias=comment_db mongo:latest
@@ -371,11 +371,11 @@ microservices_comment_1    puma                          Up
 microservices_mongo_db_1   docker-entrypoint.sh mongod   Up      27017/tcp
 microservices_post_1       python3 post_app.py           Up
 microservices_ui_1         puma                          Up      0.0.0.0:9292->9292/tcp
-``` 
+```
 
 ## Homework 20, 21
 
-1.1) [Prometheus](https://prometheus.io) is a powerful time-series monitoring service, providing a flexible platform for 
+1.1) [Prometheus](https://prometheus.io) is a powerful time-series monitoring service, providing a flexible platform for
 monitoring software products. Let's run and get acquainted with this product.
 
  - create instance in GCE by `docker-machine`. Change the environment variables for the Docker Client and connect to the remote Docker Engine
@@ -401,13 +401,13 @@ default-allow-ssh       default  INGRESS    65534     tcp:22
 docker-machines         default  INGRESS    1000      tcp:2376
 prometheus-default      default  INGRESS    1000      tcp:9090
 puma-default            default  INGRESS    1000      tcp:9292
-``` 
+```
 
  - create if you do not have one of them
 ```bash
 ~$ gcloud compute firewall-rules create default-allow-ssh --allow tcp:22 --priority=65534 --description="Allow SSH connections" --direction=INGRESS
 ~$ gcloud compute firewall-rules create prometheus-default --allow tcp:9090
-~$ gcloud compute firewall-rules create puma-default --allow tcp:9292 
+~$ gcloud compute firewall-rules create puma-default --allow tcp:9292
 ```
 
  - run [Prometheus](https://prometheus.io) from the DockerHub image
@@ -459,11 +459,11 @@ microservices_prometheus_1   /bin/prometheus -config.fi ...   Up      0.0.0.0:90
 microservices_ui_1           puma                             Up      0.0.0.0:9292->9292/tcp
 ```
 
- - open URL [http://<host_ip>:9292/targets](http://<host_ip>:9292/targets), [http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics), 
+ - open URL [http://<host_ip>:9292/targets](http://<host_ip>:9292/targets), [http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics),
  [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and test the app
  - `<host_ip>` is an external host ip: `docker-machine ip vm1`
 
-1.3) Healthcheck is a part of metrics for each service and runs into each of them (part of source code). 
+1.3) Healthcheck is a part of metrics for each service and runs into each of them (part of source code).
 Microservices are dependent from each other and healthcheck indicates availability all endpoints for concrete service (1 = healthy, 0 = unhealthy)
 
  - open URL [http://<host_ip>:9090] and find and open graph  for `ui_health`
@@ -477,7 +477,7 @@ Microservices are dependent from each other and healthcheck indicates availabili
 ~$ docker-compose start post
 ```
 
-1.4) Node exporter helps to collect metrics about hardware and OS for Prometheus; 
+1.4) Node exporter helps to collect metrics about hardware and OS for Prometheus;
 [MongoDB exporter](https://github.com/percona/mongodb_exporter) collects metrics about sharding, replication and storage engines
 
  - rebuild [Prometheus](https://prometheus.io) image, build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
