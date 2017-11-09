@@ -373,7 +373,7 @@ microservices_post_1       python3 post_app.py           Up
 microservices_ui_1         puma                          Up      0.0.0.0:9292->9292/tcp
 ``` 
 
-## Homework 21
+## Homework 20, 21
 
 1.1) [Prometheus](https://prometheus.io) is a powerful time-series monitoring service, providing a flexible platform for 
 monitoring software products. Let's run and get acquainted with this product.
@@ -416,9 +416,9 @@ puma-default            default  INGRESS    1000      tcp:9292
 ~$ docker ps
 ```
 
- - Open URL [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and `[http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics)
+ - open URL [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and `[http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics)
 
- - Stop docker instance [Prometheus](https://prometheus.io)
+ - stop docker instance [Prometheus](https://prometheus.io)
 ```bash
 ~$ docker stop prometheus
 ``` 
@@ -426,7 +426,7 @@ puma-default            default  INGRESS    1000      tcp:9292
 1.2) Prometheus will monitor all microservices, so we need a container with Prometheus that could communicate
  over the network with all other services and config it in `docker-compose` file
 
- - Set environment variables for `docker-compose`
+ - set environment variables for `docker-compose`
 ```bash
 ~$ export USERNAME=<dockerhub_login>
 ~$ cp .env.example .env
@@ -438,12 +438,12 @@ puma-default            default  INGRESS    1000      tcp:9292
 ~ui$ bash docker_build.sh
 ~post-py$ bash docker_build.sh
 ~comment$ bash docker_build.sh
-~$ docker images | grep dashishmakov
-REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
-dashishmakov/ui           latest              817f7a305b9c        3 minutes ago       459MB
-dashishmakov/post         latest              99b7ead06d0e        26 minutes ago      102MB
-dashishmakov/comment      latest              f72817e1d2a7        27 minutes ago      778MB
-dashishmakov/prometheus   latest              e3e8ab8a856c        30 minutes ago      75.4MB
+$ docker images
+REPOSITORY                      TAG                 IMAGE ID            CREATED             SIZE
+dashishmakov/ui                 latest              dfac89a27201        43 minutes ago      204MB
+dashishmakov/comment            latest              ce03118d56db        2 hours ago         778MB
+dashishmakov/post               latest              8cafeba72426        2 hours ago         101MB
+dashishmakov/prometheus         latest              1c9abba20bb2        2 hours ago         80.2MB
 ``` 
 
  - run all containers
@@ -459,13 +459,55 @@ microservices_prometheus_1   /bin/prometheus -config.fi ...   Up      0.0.0.0:90
 microservices_ui_1           puma                             Up      0.0.0.0:9292->9292/tcp
 ```
 
- - Open URL [http://<host_ip>:9292/targets](http://<host_ip>:9292/targets), [http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics) and test the app
- - `<gce-vm-ip>` is an external host ip: `docker-machine ip vm1`
+ - open URL [http://<host_ip>:9292/targets](http://<host_ip>:9292/targets), [http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics), 
+ [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and test the app
+ - `<host_ip>` is an external host ip: `docker-machine ip vm1`
 
-1.3) ...
+1.3) Healthcheck is a part of metrics for each service and runs into each of them (part of source code). 
+Microservices are dependent from each other and healthcheck indicates availability all endpoints for concrete service (1 = healthy, 0 = unhealthy)
 
- - ?
+ - open URL [http://<host_ip>:9090] and find and open graph  for `ui_health`
+ - stop `post` service and refresh graph
+```bash
+~$ docker-compose stop post
+```
+ - open graphs `ui_health_post_availability` and `ui_health_comment_availability` and test each of them
+ - start `post` service should fix Healthcheck
+```bash
+~$ docker-compose start post
+```
 
+1.4) Node exporter helps to collect metrics about hardware and OS for Prometheus; 
+[MongoDB exporter](https://github.com/percona/mongodb_exporter) collects metrics about sharding, replication and storage engines
+
+ - rebuild [Prometheus](https://prometheus.io) image, build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
+```bash
+ ~prometheus$ bash docker_build.sh
+ ~mongodb-exporter$ bash docker_build.sh
+ ~$ docker-compose down
+ ~$ docker-compose up -d
+ ~$ docker-compose ps
+              Name                            Command               State           Ports
+--------------------------------------------------------------------------------------------------
+microservices_comment_1            puma                             Up
+microservices_mongo_db_1           docker-entrypoint.sh mongod      Up      27017/tcp
+microservices_mongodb-exporter_1   mongodb_exporter                 Up      9001/tcp
+microservices_node-exporter_1      /bin/node_exporter --path. ...   Up      9100/tcp
+microservices_post_1               python3 post_app.py              Up      5000/tcp
+microservices_prometheus_1         /bin/prometheus --config.f ...   Up      0.0.0.0:9090->9090/tcp
+microservices_ui_1                 puma                             Up      0.0.0.0:9292->9292/tcp
+```
+
+ - open URL [http://<host_ip>:9090/targets] and test
+ - push all microservice images to [Docker Hub](https://hub.docker.com) repository
+```bash
+~$ docker login
+~$ docker push $USER_NAME/ui
+~$ docker push $USER_NAME/post
+~$ docker push $USER_NAME/comment
+~$ docker push $USER_NAME/prometheus
+~$ docker push $USERNAME/mongodb_exporter
+```
 
 
 
