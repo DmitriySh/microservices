@@ -67,8 +67,20 @@ services:
     networks:
       - back_net
 
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    networks:
+      - back_net
+
 volumes:
   post_db:
+  grafana_data:
 
 networks:
   back_net:
