@@ -421,9 +421,9 @@ puma-default            default  INGRESS    1000      tcp:9292
  - stop docker instance [Prometheus](https://prometheus.io)
 ```bash
 ~$ docker stop prometheus
-``` 
+```
 
-1.2) Prometheus will monitor all microservices, so we need a container with Prometheus that could communicate
+1.2) [Prometheus](https://prometheus.io) will monitor all microservices, so we need a container with Prometheus that could communicate
  over the network with all other services and config it in `docker-compose` file
 
  - set environment variables for `docker-compose`
@@ -444,7 +444,7 @@ dashishmakov/ui                 latest              dfac89a27201        43 minut
 dashishmakov/comment            latest              ce03118d56db        2 hours ago         778MB
 dashishmakov/post               latest              8cafeba72426        2 hours ago         101MB
 dashishmakov/prometheus         latest              1c9abba20bb2        2 hours ago         80.2MB
-``` 
+```
 
  - run all containers
 ```bash
@@ -463,24 +463,24 @@ microservices_ui_1           puma                             Up      0.0.0.0:92
  [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and test the app
  - `<host_ip>` is an external host ip: `docker-machine ip vm1`
 
-1.3) Healthcheck is a part of metrics for each service and runs into each of them (part of source code).
-Microservices are dependent from each other and healthcheck indicates availability all endpoints for concrete service (1 = healthy, 0 = unhealthy)
+1.3) `Healthcheck` is a part of metrics for each service and runs into each of them (part of source code).
+Microservices are dependent from each other and `healthcheck` indicates availability all endpoints for concrete service (1 = healthy, 0 = unhealthy)
 
- - open URL [http://<host_ip>:9090] and find and open graph  for `ui_health`
+ - open URL [http://<host_ip>:9090] and find graph `ui_health`
  - stop `post` service and refresh graph
 ```bash
 ~$ docker-compose stop post
 ```
  - open graphs `ui_health_post_availability` and `ui_health_comment_availability` and test each of them
- - start `post` service should fix Healthcheck
+ - start `post` service should fix `Healthcheck`
 ```bash
 ~$ docker-compose start post
 ```
 
-1.4) [Node exporter](https://github.com/prometheus/node_exporter) helps to collect metrics about hardware and OS for Prometheus;
+1.4) [Node exporter](https://github.com/prometheus/node_exporter) is a part of project [Prometheus](https://prometheus.io). It helps to collect hardware and *NIX kernels metrics of host machine (main virtual machine) for [Prometheus](https://prometheus.io);
 [MongoDB exporter](https://github.com/percona/mongodb_exporter) collects metrics about sharding, replication and storage engines
 
- - rebuild [Prometheus](https://prometheus.io) image, build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
+ - rebuild [Prometheus](https://prometheus.io) image if previous version don't have access to [Node exporter](https://github.com/prometheus/node_exporter), build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
 ```bash
  ~prometheus$ bash docker_build.sh
  ~mongodb-exporter$ bash docker_build.sh
@@ -498,14 +498,14 @@ microservices_prometheus_1         /bin/prometheus --config.f ...   Up      0.0.
 microservices_ui_1                 puma                             Up      0.0.0.0:9292->9292/tcp
 ```
 
- - open URL [http://<host_ip>:9090/targets] and test
+ - open URL [http://<host_ip>:9090/targets] and test `node_cpu` metric
  - push all microservice images to [Docker Hub](https://hub.docker.com) repository
 ```bash
 ~$ docker login
-~$ docker push $USER_NAME/ui
-~$ docker push $USER_NAME/post
-~$ docker push $USER_NAME/comment
-~$ docker push $USER_NAME/prometheus
+~$ docker push $USERNAME/ui
+~$ docker push $USERNAME/post
+~$ docker push $USERNAME/comment
+~$ docker push $USERNAME/prometheus
 ~$ docker push $USERNAME/mongodb_exporter
 ```
 
