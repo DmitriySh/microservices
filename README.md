@@ -477,7 +477,7 @@ Microservices are dependent from each other and healthcheck indicates availabili
 ~$ docker-compose start post
 ```
 
-1.4) Node exporter helps to collect metrics about hardware and OS for Prometheus;
+1.4) [Node exporter](https://github.com/prometheus/node_exporter) helps to collect metrics about hardware and OS for Prometheus;
 [MongoDB exporter](https://github.com/percona/mongodb_exporter) collects metrics about sharding, replication and storage engines
 
  - rebuild [Prometheus](https://prometheus.io) image, build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
