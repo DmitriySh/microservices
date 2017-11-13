@@ -78,6 +78,13 @@ services:
     networks:
       - back_net
 
+  alertmanager:
+    image: ${USER_NAME}/alertmanager
+    command:
+      - '-config.file=/etc/alertmanager/config.yml'
+    ports:
+      - 9093:9093
+
 volumes:
   post_db:
   grafana_data:
