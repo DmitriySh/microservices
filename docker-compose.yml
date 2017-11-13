@@ -79,11 +79,13 @@ services:
       - back_net
 
   alertmanager:
-    image: ${USER_NAME}/alertmanager
+    image: ${USERNAME}/alertmanager
     command:
       - '-config.file=/etc/alertmanager/config.yml'
     ports:
       - 9093:9093
+    networks:
+      - back_net
 
 volumes:
   post_db:
