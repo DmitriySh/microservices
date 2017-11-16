@@ -10,20 +10,20 @@ services:
           - post_db
           - comment_db
   ui:
-    image: ${USERNAME}/ui:${UI_VERSION}
+    image: ${USERNAME}/ui:${LATEST_VERSION}
     ports:
       - ${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp
     networks:
       - front_net
 
   post:
-    image: ${USERNAME}/post:${POST_VERSION}
+    image: ${USERNAME}/post:${LATEST_VERSION}
     networks:
       - front_net
       - back_net
 
   comment:
-    image: ${USERNAME}/comment:${COMMENT_VERSION}
+    image: ${USERNAME}/comment:${LATEST_VERSION}
     networks:
       - front_net
       - back_net
@@ -63,7 +63,7 @@ services:
       - '/sys:/sys:ro'
       - '/var/lib/docker/:/var/lib/docker:ro'
     ports:
-      - '8080:8080'
+      - ${CADV_HOST_PORT}:${CADV_CONTAINER_PORT}
     networks:
       - back_net
 
@@ -74,7 +74,7 @@ services:
     depends_on:
       - prometheus
     ports:
-      - 3000:3000
+      - ${GF_HOST_PORT}:${GF_CONTAINER_PORT}
     networks:
       - back_net
 
@@ -83,7 +83,7 @@ services:
     command:
       - '-config.file=/etc/alertmanager/config.yml'
     ports:
-      - 9093:9093
+      - ${ALERTM_HOST_PORT}:${ALERTM_CONTAINER_PORT}
     networks:
       - back_net
 
