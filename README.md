@@ -472,12 +472,12 @@ Microservices are dependent from each other and `healthcheck` indicates availabi
  - open URL [http://<host_ip>:9090] and find graph `ui_health`
  - stop `post` service and refresh graph
 ```bash
-~~compose$ docker-compose stop post
+~compose$ docker-compose stop post
 ```
  - open graphs `ui_health_post_availability` and `ui_health_comment_availability` and test each of them
  - start `post` service should fix `Healthcheck`
 ```bash
-~~compose$ docker-compose start post
+~compose$ docker-compose start post
 ```
 
 1.4) [Node exporter](https://github.com/prometheus/node_exporter) is a part of project [Prometheus](https://prometheus.io). It helps to collect hardware and *NIX kernels metrics of host machine (main virtual machine) for [Prometheus](https://prometheus.io);
@@ -512,7 +512,7 @@ microservices_ui_1                 puma                             Up      0.0.
 ~compose$ docker push $USERNAME/mongodb_exporter
 ```
 
-## Homework 22, 23
+## Homework 23
 
 1.1) Docker's container monitoring. [cAdvisor](https://github.com/google/cadvisor) analyzes resource usage and performance characteristics of running containers. 
 It collects, aggregates, processes, and might to exports information to various storages such as 
@@ -538,15 +538,15 @@ $ eval $(docker-machine env vm1)
  - new service `cadvisor` should be defined in `docker-compose` file and [Prometheus](https://prometheus.io) should get information from here
  - set environment variables for docker-compose
  ```
-~~compose$ export USERNAME=<dockerhub_login>
-~~compose$ cp .env.example .env
+~compose$ export USERNAME=<dockerhub_login>
+~compose$ cp .env.example .env
  ```
 
   - rebuild [Prometheus](https://prometheus.io) image and start microservices
 ```
 ~compose/prometheus$ bash docker_build.sh
-~~compose$ docker-compose up -d
-~~compose$ docker-compose ps
+~compose$ docker-compose up -d
+~compose$ docker-compose ps
               Name                            Command               State           Ports
 --------------------------------------------------------------------------------------------------
 microservices_cadvisor_1           /usr/bin/cadvisor -logtostderr   Up      0.0.0.0:8080->8080/tcp
