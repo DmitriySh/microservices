@@ -6,7 +6,10 @@ DevOps course, practices with [Google Cloud Platform](https://cloud.google.com/)
 
 ## Homework 15
 
-Use [Docker](https://www.docker.com/) to create instance in GCE and publish docker image in [Docker Hub](https://hub.docker.com/)
+[Docker](https://www.docker.com/) helps to package the software into standardized units for development, shipment and deployment. 
+Containers are lightweight by design and ideal for enabling microservices application development. 
+
+Use [Docker](https://www.docker.com/) to create instance in GCE and publish docker image in [Docker Hub](https://hub.docker.com/).
 
  - Configure `gcloud` and create new GCE project `docker`
 ```bash
@@ -117,10 +120,10 @@ NAME          ACTIVE   DRIVER   STATE     URL                        SWARM   DOC
 
  - Build images and test them
 ```bash
-~$ docker build -t dashishmakov/ui:1.0 -f ./ui/Dockerfile_1_0 ./ui/
-~$ docker build -t dashishmakov/comment:1.0 ./comment/
-~$ docker build -t dashishmakov/post:1.0 ./post-py/
-~$ docker images -a | grep dashishmakov
+~compose$ docker build -t dashishmakov/ui:1.0 -f ./ui/Dockerfile_1_0 ./ui/
+~compose$ docker build -t dashishmakov/comment:1.0 ./comment/
+~compose$ docker build -t dashishmakov/post:1.0 ./post-py/
+~compose$ docker images -a | grep dashishmakov
 dashishmakov/ui        1.0                 0594004be8ef        3 minutes ago       779MB
 dashishmakov/comment   1.0                 e18cb5c57fe5        4 minutes ago       774MB
 dashishmakov/post      1.0                 1ab61dabb6fe        10 minutes ago      102MB
@@ -192,9 +195,9 @@ dashishmakov/ui:1.0
  Inside a container you don't want a full system. Use other docker files to build image 2.0 (ubuntu:16.04), image 3.0 (alpine:3.6)
  and test them with 1.0 (ruby:2.2)
 ```bash
-~$ docker build -t dashishmakov/ui:2.0 -f ./ui/Dockerfile_2_0 ./ui/
-~$ docker build -t dashishmakov/ui:3.0 -f ./ui/Dockerfile_3_0 ./ui/
-~$ docker images dashishmakov/ui
+~compose$ docker build -t dashishmakov/ui:2.0 -f ./ui/Dockerfile_2_0 ./ui/
+~compose$ docker build -t dashishmakov/ui:3.0 -f ./ui/Dockerfile_3_0 ./ui/
+~compose$ docker images dashishmakov/ui
 dashishmakov/ui        3.0                 086371a13621        25 seconds ago       199MB
 dashishmakov/ui        2.0                 caa68976405a        About an hour ago    454MB
 dashishmakov/ui        1.0                 0594004be8ef        3 days ago           779MB
@@ -361,10 +364,10 @@ much like passing command-line parameters to `docker run`, `docker network`, `do
 
  - Set environment variables for `docker-compose`
 ```bash
-~$ export USERNAME=dashishmakov
-~$ cp .env.example .env
-~$ docker-compose up -d
-~$ docker-compose ps
+~compose$ export USERNAME=dashishmakov
+~compose$ cp .env.example .env
+~compose$ docker-compose up -d
+~compose$ docker-compose ps
           Name                       Command             State           Ports
 ---------------------------------------------------------------------------------------
 microservices_comment_1    puma                          Up
@@ -412,15 +415,15 @@ puma-default            default  INGRESS    1000      tcp:9292
 
  - run [Prometheus](https://prometheus.io) from the DockerHub image
 ```bash
-~$ docker run --rm -p 9090:9090 -d --name prometheus prom/prometheus
-~$ docker ps
+~compose$ docker run --rm -p 9090:9090 -d --name prometheus prom/prometheus
+~compose$ docker ps
 ```
 
  - open URL [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and `[http://<host_ip>:9090/metrics](http://<host_ip>:9090/metrics)
 
  - stop docker instance [Prometheus](https://prometheus.io)
 ```bash
-~$ docker stop prometheus
+~compose$ docker stop prometheus
 ```
 
 1.2) [Prometheus](https://prometheus.io) will monitor all microservices, so we need a container with Prometheus that could communicate
@@ -428,16 +431,16 @@ puma-default            default  INGRESS    1000      tcp:9292
 
  - set environment variables for `docker-compose`
 ```bash
-~$ export USERNAME=<dockerhub_login>
-~$ cp .env.example .env
+~compose$ export USERNAME=<dockerhub_login>
+~compose$ cp .env.example .env
 ```
 
  - build custom images with [Prometheus](https://prometheus.io) and other microservices
 ```bash
-~prometheus$ bash docker_build.sh
-~ui$ bash docker_build.sh
-~post-py$ bash docker_build.sh
-~comment$ bash docker_build.sh
+~compose/composeprometheus$ bash docker_build.sh
+~compose/composeui$ bash docker_build.sh
+~compose/composepost-py$ bash docker_build.sh
+~compose/composecomment$ bash docker_build.sh
 $ docker images
 REPOSITORY                      TAG                 IMAGE ID            CREATED             SIZE
 dashishmakov/ui                 latest              dfac89a27201        43 minutes ago      204MB
@@ -448,8 +451,8 @@ dashishmakov/prometheus         latest              1c9abba20bb2        2 hours 
 
  - run all containers
 ```bash
-~$ docker-compose up -d
-~$ docker-compose ps
+~compose$ docker-compose up -d
+~compose$ docker-compose ps
            Name                         Command               State           Ports
 --------------------------------------------------------------------------------------------
 microservices_comment_1      puma                             Up
@@ -469,12 +472,12 @@ Microservices are dependent from each other and `healthcheck` indicates availabi
  - open URL [http://<host_ip>:9090] and find graph `ui_health`
  - stop `post` service and refresh graph
 ```bash
-~$ docker-compose stop post
+~~compose$ docker-compose stop post
 ```
  - open graphs `ui_health_post_availability` and `ui_health_comment_availability` and test each of them
  - start `post` service should fix `Healthcheck`
 ```bash
-~$ docker-compose start post
+~~compose$ docker-compose start post
 ```
 
 1.4) [Node exporter](https://github.com/prometheus/node_exporter) is a part of project [Prometheus](https://prometheus.io). It helps to collect hardware and *NIX kernels metrics of host machine (main virtual machine) for [Prometheus](https://prometheus.io);
@@ -482,11 +485,11 @@ Microservices are dependent from each other and `healthcheck` indicates availabi
 
  - rebuild [Prometheus](https://prometheus.io) image if previous version don't have access to [Node exporter](https://github.com/prometheus/node_exporter), build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
 ```bash
- ~prometheus$ bash docker_build.sh
- ~mongodb-exporter$ bash docker_build.sh
- ~$ docker-compose down
- ~$ docker-compose up -d
- ~$ docker-compose ps
+ ~compose/prometheus$ bash docker_build.sh
+ ~compose/mongodb-exporter$ bash docker_build.sh
+ ~compose$ docker-compose down
+ ~compose$ docker-compose up -d
+ ~compose$ docker-compose ps
               Name                            Command               State           Ports
 --------------------------------------------------------------------------------------------------
 microservices_comment_1            puma                             Up
@@ -501,12 +504,12 @@ microservices_ui_1                 puma                             Up      0.0.
  - open URL [http://<host_ip>:9090/targets] and test `node_cpu` metric
  - push all microservice images to [Docker Hub](https://hub.docker.com) repository
 ```bash
-~$ docker login
-~$ docker push $USERNAME/ui
-~$ docker push $USERNAME/post
-~$ docker push $USERNAME/comment
-~$ docker push $USERNAME/prometheus
-~$ docker push $USERNAME/mongodb_exporter
+~compose$ docker login
+~compose$ docker push $USERNAME/ui
+~compose$ docker push $USERNAME/post
+~compose$ docker push $USERNAME/comment
+~compose$ docker push $USERNAME/prometheus
+~compose$ docker push $USERNAME/mongodb_exporter
 ```
 
 ## Homework 22, 23
@@ -535,15 +538,15 @@ $ eval $(docker-machine env vm1)
  - new service `cadvisor` should be defined in `docker-compose` file and [Prometheus](https://prometheus.io) should get information from here
  - set environment variables for docker-compose
  ```
-~$ export USERNAME=<dockerhub_login>
-~$ cp .env.example .env
+~~compose$ export USERNAME=<dockerhub_login>
+~~compose$ cp .env.example .env
  ```
 
   - rebuild [Prometheus](https://prometheus.io) image and start microservices
 ```
-~prometheus$ bash docker_build.sh
-~$ docker-compose up -d
-~$ docker-compose ps
+~compose/prometheus$ bash docker_build.sh
+~~compose$ docker-compose up -d
+~~compose$ docker-compose ps
               Name                            Command               State           Ports
 --------------------------------------------------------------------------------------------------
 microservices_cadvisor_1           /usr/bin/cadvisor -logtostderr   Up      0.0.0.0:8080->8080/tcp
@@ -564,8 +567,8 @@ microservices_ui_1                 puma                             Up      0.0.
  - new service `grafana` should be defined in `docker-compose` file
  - start service  `grafana`
 ```
-~$ docker-compose up -d grafana
-~$ docker-compose ps
+~compose$ docker-compose up -d grafana
+~compose$ docker-compose ps
               Name                            Command               State           Ports
 --------------------------------------------------------------------------------------------------
 microservices_cadvisor_1           /usr/bin/cadvisor -logtostderr   Up      0.0.0.0:8080->8080/tcp
@@ -620,21 +623,21 @@ microservices_ui_1                 puma                             Up      0.0.
  - edit `config.yml` and define your own `slack_api_url` and `receivers.slack_configs.channel`
  - build image of `alertmanager` and run container
 ```
-alertmanager$ ./docker_build.sh
-$ docker-compose up -d alertmanager
+~compose/alertmanager$ ./docker_build.sh
+~compose$ docker-compose up -d alertmanager
 ```
  - if you edit `alert.rules.yml` you should rebuild `prometheus` docker image and run it again
 ```
-$ docker-compose stop prometheus
-$ docker-compose rm prometheus
-$ docker-compose up -d prometheus
+~compose$ docker-compose stop prometheus
+~compose$ docker-compose rm prometheus
+~compose$ docker-compose up -d prometheus
 ```
  - open URL [http://<host_ip>:9090] -> set `up` -> submit `execute` and look for this graph
  - stop container `post` and wait 1 minute, [Slack](https://slack.com) should receive notification `[FIRING:1] InstanceDown (post:5000 post page)`
 ```
-$ docker-compose stop post
+~compose$ docker-compose stop post
 ... wait 1m
-$ docker-compose up -d post
+~compose$ docker-compose up -d post
  ```
 
 
@@ -643,8 +646,8 @@ $ docker-compose up -d post
 
 At the end remove docker containers and remote instance of docker machine
 ```bash
-~$ docker-compose kill
-~$ docker-compose rm
-~$ docker-machine kill <docker_instance_name>
-~$ docker-machine rm <docker_instance_name>
+~compose$ docker-compose kill
+~compose$ docker-compose rm
+~compose$ docker-machine kill <docker_instance_name>
+~compose$ docker-machine rm <docker_instance_name>
 ```
