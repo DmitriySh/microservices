@@ -1,0 +1,104 @@
+version: '3.3'
+services:
+  mongo_db:
+    image: mongo:${MONGO_VERSION}
+    volumes:
+      - post_db:/data/db
+    networks:
+      back_net:
+        aliases:
+          - post_db
+          - comment_db
+  ui:
+    image: ${USERNAME}/ui:${LATEST_VERSION}
+    ports:
+      - ${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp
+    networks:
+      - front_net
+
+  post:
+    image: ${USERNAME}/post:${LATEST_VERSION}
+    networks:
+      - front_net
+      - back_net
+
+  comment:
+    image: ${USERNAME}/comment:${LATEST_VERSION}
+    networks:
+      - front_net
+      - back_net
+
+  prometheus:
+    image: ${USERNAME}/prometheus
+    ports:
+      - ${PROM_HOST_PORT}:${PROM_CONTAINER_PORT}
+    networks:
+      - front_net
+      - back_net
+
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION}
+    user: root
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+    networks:
+      - back_net
+
+  mongodb-exporter:
+    image: ${USERNAME}/mongodb_exporter
+    networks:
+      - back_net
+
+  cadvisor:
+    image: google/cadvisor:latest
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:rw'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    ports:
+      - ${CADV_HOST_PORT}:${CADV_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - ${GF_HOST_PORT}:${GF_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  alertmanager:
+    image: ${USERNAME}/alertmanager
+    command:
+      - '-config.file=/etc/alertmanager/config.yml'
+    ports:
+      - ${ALERTM_HOST_PORT}:${ALERTM_CONTAINER_PORT}
+    networks:
+      - back_net
+
+volumes:
+  post_db:
+  grafana_data:
+
+networks:
+  back_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${BACK_NET}
+  front_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${FRONT_NET}
