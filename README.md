@@ -652,3 +652,55 @@ At the end remove docker containers and remote instance of docker machine
 ~compose$ docker-machine kill <docker_instance_name>
 ~compose$ docker-machine rm <docker_instance_name>
 ```
+
+## Homework 27
+
+1) [Docker](https://www.docker.com/) include `swarm` mode for natively managing a cluster of Docker Engines called a [Docker Swarm](https://docs.docker.com/engine/swarm/).
+[Docker Swarm](https://docs.docker.com/engine/swarm/) available out of the box for cluster management and orchestration features.
+
+ - create several instances in GCE by `docker-machine`. 
+```bash
+~swarm$ docker-machine create --driver google \
+   --google-project <project_id> \
+   --google-zone europe-west1-b \
+   --google-machine-type g1-small \
+   --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
+   master-1
+~swarm$ docker-machine create --driver google \
+   --google-project <project_id> \
+   --google-zone europe-west1-b \
+   --google-machine-type g1-small \
+   --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
+   worker-1
+~swarm$ docker-machine create --driver google \
+   --google-project <project_id> \
+   --google-zone europe-west1-b \
+   --google-machine-type g1-small \
+   --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
+   worker-2
+```
+
+ - change the environment variables for the Docker Client and connect to the remote `master-1` Docker Engine
+```bash
+~swarm$ eval $(docker-machine env master-1)
+~swarm$ export USERNAME=dashishmakov
+```
+
+ - rebuild docker image for `ui` service
+```bash
+~swarm/ui$ bash docker_build.sh
+```
+
+ - init [Docker Swarm](https://docs.docker.com/engine/swarm/)
+   - node `master-1` switch to `swarm` mode
+   - node to become `swarm` manager node
+   - node assigned a hostname
+   - node listen port 2377
+   - node has status `active` and could get task from scheduler
+   - init distributed persistent storage for orchestration
+   - generates self-signed root certificate for `swarm`
+   - generates tokens to bind `Worker` и `Manager` nodes to the cluster
+   - creates overlay-network `Ingress` to publish ports outside the swarm. All nodes participate in an ingress routing mesh
+```bash
+~swarm$ docker swarm init
+```
