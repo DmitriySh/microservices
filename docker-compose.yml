@@ -10,20 +10,20 @@ services:
           - post_db
           - comment_db
   ui:
-    image: ${USERNAME}/ui:${UI_VERSION}
+    image: ${USERNAME}/ui:${LATEST_VERSION}
     ports:
       - ${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp
     networks:
       - front_net
 
   post:
-    image: ${USERNAME}/post:${POST_VERSION}
+    image: ${USERNAME}/post:${LATEST_VERSION}
     networks:
       - front_net
       - back_net
 
   comment:
-    image: ${USERNAME}/comment:${COMMENT_VERSION}
+    image: ${USERNAME}/comment:${LATEST_VERSION}
     networks:
       - front_net
       - back_net
@@ -48,7 +48,6 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
     networks:
-      - front_net
       - back_net
 
   mongodb-exporter:
@@ -56,8 +55,41 @@ services:
     networks:
       - back_net
 
+  cadvisor:
+    image: google/cadvisor:latest
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:rw'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    ports:
+      - ${CADV_HOST_PORT}:${CADV_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - ${GF_HOST_PORT}:${GF_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  alertmanager:
+    image: ${USERNAME}/alertmanager
+    command:
+      - '-config.file=/etc/alertmanager/config.yml'
+    ports:
+      - ${ALERTM_HOST_PORT}:${ALERTM_CONTAINER_PORT}
+    networks:
+      - back_net
+
 volumes:
   post_db:
+  grafana_data:
 
 networks:
   back_net:

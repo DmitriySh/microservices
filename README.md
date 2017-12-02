@@ -421,9 +421,9 @@ puma-default            default  INGRESS    1000      tcp:9292
  - stop docker instance [Prometheus](https://prometheus.io)
 ```bash
 ~$ docker stop prometheus
-``` 
+```
 
-1.2) Prometheus will monitor all microservices, so we need a container with Prometheus that could communicate
+1.2) [Prometheus](https://prometheus.io) will monitor all microservices, so we need a container with Prometheus that could communicate
  over the network with all other services and config it in `docker-compose` file
 
  - set environment variables for `docker-compose`
@@ -444,7 +444,7 @@ dashishmakov/ui                 latest              dfac89a27201        43 minut
 dashishmakov/comment            latest              ce03118d56db        2 hours ago         778MB
 dashishmakov/post               latest              8cafeba72426        2 hours ago         101MB
 dashishmakov/prometheus         latest              1c9abba20bb2        2 hours ago         80.2MB
-``` 
+```
 
  - run all containers
 ```bash
@@ -463,24 +463,24 @@ microservices_ui_1           puma                             Up      0.0.0.0:92
  [http://<host_ip>:9090/targets](http://<host_ip>:9090/targets) and test the app
  - `<host_ip>` is an external host ip: `docker-machine ip vm1`
 
-1.3) Healthcheck is a part of metrics for each service and runs into each of them (part of source code).
-Microservices are dependent from each other and healthcheck indicates availability all endpoints for concrete service (1 = healthy, 0 = unhealthy)
+1.3) `Healthcheck` is a part of metrics for each service and runs into each of them (part of source code).
+Microservices are dependent from each other and `healthcheck` indicates availability all endpoints for concrete service (1 = healthy, 0 = unhealthy)
 
- - open URL [http://<host_ip>:9090] and find and open graph  for `ui_health`
+ - open URL [http://<host_ip>:9090] and find graph `ui_health`
  - stop `post` service and refresh graph
 ```bash
 ~$ docker-compose stop post
 ```
  - open graphs `ui_health_post_availability` and `ui_health_comment_availability` and test each of them
- - start `post` service should fix Healthcheck
+ - start `post` service should fix `Healthcheck`
 ```bash
 ~$ docker-compose start post
 ```
 
-1.4) Node exporter helps to collect metrics about hardware and OS for Prometheus;
+1.4) [Node exporter](https://github.com/prometheus/node_exporter) is a part of project [Prometheus](https://prometheus.io). It helps to collect hardware and *NIX kernels metrics of host machine (main virtual machine) for [Prometheus](https://prometheus.io);
 [MongoDB exporter](https://github.com/percona/mongodb_exporter) collects metrics about sharding, replication and storage engines
 
- - rebuild [Prometheus](https://prometheus.io) image, build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
+ - rebuild [Prometheus](https://prometheus.io) image if previous version don't have access to [Node exporter](https://github.com/prometheus/node_exporter), build [MongoDB exporter](https://github.com/percona/mongodb_exporter) image and restart microservices
 ```bash
  ~prometheus$ bash docker_build.sh
  ~mongodb-exporter$ bash docker_build.sh
@@ -498,16 +498,144 @@ microservices_prometheus_1         /bin/prometheus --config.f ...   Up      0.0.
 microservices_ui_1                 puma                             Up      0.0.0.0:9292->9292/tcp
 ```
 
- - open URL [http://<host_ip>:9090/targets] and test
+ - open URL [http://<host_ip>:9090/targets] and test `node_cpu` metric
  - push all microservice images to [Docker Hub](https://hub.docker.com) repository
 ```bash
 ~$ docker login
-~$ docker push $USER_NAME/ui
-~$ docker push $USER_NAME/post
-~$ docker push $USER_NAME/comment
-~$ docker push $USER_NAME/prometheus
+~$ docker push $USERNAME/ui
+~$ docker push $USERNAME/post
+~$ docker push $USERNAME/comment
+~$ docker push $USERNAME/prometheus
 ~$ docker push $USERNAME/mongodb_exporter
 ```
+
+## Homework 22, 23
+
+1.1) Docker's container monitoring. [cAdvisor](https://github.com/google/cadvisor) analyzes resource usage and performance characteristics of running containers. 
+It collects, aggregates, processes, and might to exports information to various storages such as 
+[Prometheus](https://prometheus.io), [ElasticSearch](https://www.elastic.co), [InfluxDB](https://www.influxdata.com), [Kafka](http://kafka.apache.org) and simple stdout.
+
+ - create instance in GCE by `docker-machine`. Change the environment variables for the Docker Client and connect to the remote Docker Engine
+```
+$ docker-machine create --driver google \
+--google-project infra-179717 \
+--google-machine-image https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts \
+--google-machine-type n1-standard-1 \
+--google-zone europe-west1-b \
+--google-open-port 80/tcp \
+--google-open-port 3000/tcp \
+--google-open-port 8080/tcp \
+--google-open-port 9090/tcp \
+--google-open-port 9292/tcp \
+vm1
+
+$ eval $(docker-machine env vm1)
+```
+
+ - new service `cadvisor` should be defined in `docker-compose` file and [Prometheus](https://prometheus.io) should get information from here
+ - set environment variables for docker-compose
+ ```
+~$ export USERNAME=<dockerhub_login>
+~$ cp .env.example .env
+ ```
+
+  - rebuild [Prometheus](https://prometheus.io) image and start microservices
+```
+~prometheus$ bash docker_build.sh
+~$ docker-compose up -d
+~$ docker-compose ps
+              Name                            Command               State           Ports
+--------------------------------------------------------------------------------------------------
+microservices_cadvisor_1           /usr/bin/cadvisor -logtostderr   Up      0.0.0.0:8080->8080/tcp
+microservices_comment_1            puma                             Up
+microservices_mongo_db_1           docker-entrypoint.sh mongod      Up      27017/tcp
+microservices_mongodb-exporter_1   mongodb_exporter                 Up      9001/tcp
+microservices_node-exporter_1      /bin/node_exporter --path. ...   Up      9100/tcp
+microservices_post_1               python3 post_app.py              Up      5000/tcp
+microservices_prometheus_1         /bin/prometheus --config.f ...   Up      0.0.0.0:9090->9090/tcp
+microservices_ui_1                 puma                             Up      0.0.0.0:9292->9292/tcp
+```
+
+ - open URL [http://<host_ip>:8080/docker] and watch detailed information for each one; [http://<host_ip>:8080/metrics] defines metrics for Prometheus, `container_memory_usage_bytes` for example
+ - open URL [http://<host_ip>:9090] and test metric `container_memory_usage_bytes` and others in [Prometheus](https://prometheus.io)
+
+1.2.1) Use [Grafana](https://grafana.com) for visualizing metrics data from docker containers
+
+ - new service `grafana` should be defined in `docker-compose` file
+ - start service  `grafana`
+```
+~$ docker-compose up -d grafana
+~$ docker-compose ps
+              Name                            Command               State           Ports
+--------------------------------------------------------------------------------------------------
+microservices_cadvisor_1           /usr/bin/cadvisor -logtostderr   Up      0.0.0.0:8080->8080/tcp
+microservices_comment_1            puma                             Up
+microservices_grafana_1            /run.sh                          Up      0.0.0.0:3000->3000/tcp
+microservices_mongo_db_1           docker-entrypoint.sh mongod      Up      27017/tcp
+microservices_mongodb-exporter_1   mongodb_exporter                 Up      9001/tcp
+microservices_node-exporter_1      /bin/node_exporter --path. ...   Up      9100/tcp
+microservices_post_1               python3 post_app.py              Up      5000/tcp
+microservices_prometheus_1         /bin/prometheus --config.f ...   Up      0.0.0.0:9090->9090/tcp
+microservices_ui_1                 puma                             Up      0.0.0.0:9292->9292/tcp
+```
+
+ - open URL [http://<host_ip>:3000/docker], login and add new data source, name: `Prometheus Server`, type: `Prometheus`, url: `http://<host_ip>:9090`
+ - download shared dashboard `Docker and system monitoring` from [Dashboards](https://grafana.com/dashboards) and import it
+
+1.2.2) Let's create new dashboard `UI Service Monitoring` for [Grafana](https://grafana.com):
+ 
+ - `main menu` -> `dashboards` -> `new`
+   - `graph` -> `edit panel title` -> `metrics` tab -> `data source`: Prometheus Server -> select metric `ui_request_count`
+   - tune graph: refresh `every 10 seconds` and show `last 15 minutes`
+   - `general` tab -> `Title`: `UI HTTP Requests`
+ - save template with name: `Add UI HTTP Requests`
+
+ - add new row `Graph` for our custom dashboard
+   - `graph` -> `edit panel title` -> `metrics` tab -> `data source`: Prometheus Server -> select metric pattern `rate(ui_request_count{http_status=~"^[45].*"}[5m])`
+   - tune graph: refresh `every 10 seconds` and show `last 15 minutes`
+   - `general` tab -> `Title`: `Rate of UI HTTP Requests with Error`
+   - for test only open URL `http://<host_ip>:9292/nonexistent` and register exception with undefined endpoint
+ - save template with name: `Add HTTP Requests with Error status code`
+
+ - add 3rd row `Graph` for our custom dashboard
+   - `graph` -> `edit panel title` -> `metrics` tab -> `data source`: Prometheus Server -> select metric pattern `histogram_quantile(0.95, sum(rate(ui_request_latency_seconds_bucket[5m])) by (le))`
+   - `general` tab -> `Title`: `HTTP response time 95th percentile`
+ - save template with name: `Add HTTP response time 95th percentile`
+
+ - each dashboard has own `version history` of changes, look at configuration
+ - export dashbord to JSON file with name: `UI Service Monitoring`
+
+1.2.3) Let's create new one dashboard `Business Logic Monitoring`:
+
+ - title: `Post count`, metrics query: `rate(post_count[1h])`, save template
+ - title: `Comment Count`, metrics query: `rate(comment_count[1h])`, save template
+ - export dashbord to JSON file
+
+
+ 1.3) Alerts help to know about some problems in production environment at the same time when that happens. 
+ Let's add WebHook for your own [Slack](https://slack.com) channel to get notifications in some accident cases. 
+ [Alertmanager](https://prometheus.io/docs/alerting/alertmanager/) is a component for [Prometheus](https://prometheus.io) that handle alerts and rote sufisticated notifications
+
+ - new service `alertmanager` should be defined in `docker-compose.yml` and `prometheus.yml` that [Prometheus](https://prometheus.io) should to know about it 
+ - edit `config.yml` and define your own `slack_api_url` and `receivers.slack_configs.channel`
+ - build image of `alertmanager` and run container
+```
+alertmanager$ ./docker_build.sh
+$ docker-compose up -d alertmanager
+```
+ - if you edit `alert.rules.yml` you should rebuild `prometheus` docker image and run it again
+```
+$ docker-compose stop prometheus
+$ docker-compose rm prometheus
+$ docker-compose up -d prometheus
+```
+ - open URL [http://<host_ip>:9090] -> set `up` -> submit `execute` and look for this graph
+ - stop container `post` and wait 1 minute, [Slack](https://slack.com) should receive notification `[FIRING:1] InstanceDown (post:5000 post page)`
+```
+$ docker-compose stop post
+... wait 1m
+$ docker-compose up -d post
+ ```
 
 
 
