@@ -239,7 +239,7 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
   It should connect to remote `Docker Engine`.
 ```bash
 ~$ docker-machine create --driver google \
-   --google-project  docker-183019 \
+   --google-project <project_id> \
    --google-zone europe-west1-b \
    --google-machine-type g1-small \
    --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
@@ -384,7 +384,7 @@ monitoring software products. Let's run and get acquainted with this product.
  - create instance in GCE by `docker-machine`. Change the environment variables for the Docker Client and connect to the remote Docker Engine
  ```bash
 $ docker-machine create --driver google \
---google-project infra-179717 \
+--google-project <project_id> \
 --google-machine-image https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts \
 --google-machine-type n1-standard-1 \
 --google-zone europe-west1-b \
@@ -437,10 +437,10 @@ puma-default            default  INGRESS    1000      tcp:9292
 
  - build custom images with [Prometheus](https://prometheus.io) and other microservices
 ```bash
-~compose/composeprometheus$ bash docker_build.sh
-~compose/composeui$ bash docker_build.sh
-~compose/composepost-py$ bash docker_build.sh
-~compose/composecomment$ bash docker_build.sh
+~compose/prometheus$ bash docker_build.sh
+~compose/ui$ bash docker_build.sh
+~compose/post-py$ bash docker_build.sh
+~compose/comment$ bash docker_build.sh
 $ docker images
 REPOSITORY                      TAG                 IMAGE ID            CREATED             SIZE
 dashishmakov/ui                 latest              dfac89a27201        43 minutes ago      204MB
@@ -474,6 +474,7 @@ Microservices are dependent from each other and `healthcheck` indicates availabi
 ```bash
 ~compose$ docker-compose stop post
 ```
+
  - open graphs `ui_health_post_availability` and `ui_health_comment_availability` and test each of them
  - start `post` service should fix `Healthcheck`
 ```bash
@@ -519,9 +520,9 @@ It collects, aggregates, processes, and might to exports information to various 
 [Prometheus](https://prometheus.io), [ElasticSearch](https://www.elastic.co), [InfluxDB](https://www.influxdata.com), [Kafka](http://kafka.apache.org) and simple stdout.
 
  - create instance in GCE by `docker-machine`. Change the environment variables for the Docker Client and connect to the remote Docker Engine
-```
+```bash
 $ docker-machine create --driver google \
---google-project infra-179717 \
+--google-project <project_id> \
 --google-machine-image https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts \
 --google-machine-type n1-standard-1 \
 --google-zone europe-west1-b \
@@ -537,13 +538,13 @@ $ eval $(docker-machine env vm1)
 
  - new service `cadvisor` should be defined in `docker-compose` file and [Prometheus](https://prometheus.io) should get information from here
  - set environment variables for docker-compose
- ```
+ ```bash
 ~compose$ export USERNAME=<dockerhub_login>
 ~compose$ cp .env.example .env
  ```
 
   - rebuild [Prometheus](https://prometheus.io) image and start microservices
-```
+```bash
 ~compose/prometheus$ bash docker_build.sh
 ~compose$ docker-compose up -d
 ~compose$ docker-compose ps
@@ -566,7 +567,7 @@ microservices_ui_1                 puma                             Up      0.0.
 
  - new service `grafana` should be defined in `docker-compose` file
  - start service  `grafana`
-```
+```bash
 ~compose$ docker-compose up -d grafana
 ~compose$ docker-compose ps
               Name                            Command               State           Ports
@@ -622,19 +623,19 @@ microservices_ui_1                 puma                             Up      0.0.
  - new service `alertmanager` should be defined in `docker-compose.yml` and `prometheus.yml` that [Prometheus](https://prometheus.io) should to know about it 
  - edit `config.yml` and define your own `slack_api_url` and `receivers.slack_configs.channel`
  - build image of `alertmanager` and run container
-```
+```bash
 ~compose/alertmanager$ ./docker_build.sh
 ~compose$ docker-compose up -d alertmanager
 ```
  - if you edit `alert.rules.yml` you should rebuild `prometheus` docker image and run it again
-```
+```bash
 ~compose$ docker-compose stop prometheus
 ~compose$ docker-compose rm prometheus
 ~compose$ docker-compose up -d prometheus
 ```
  - open URL [http://<host_ip>:9090] -> set `up` -> submit `execute` and look for this graph
  - stop container `post` and wait 1 minute, [Slack](https://slack.com) should receive notification `[FIRING:1] InstanceDown (post:5000 post page)`
-```
+```bash
 ~compose$ docker-compose stop post
 ... wait 1m
 ~compose$ docker-compose up -d post
