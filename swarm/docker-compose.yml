@@ -26,6 +26,10 @@ services:
         delay: 10s
         parallelism: 2
         failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        max_attempts: 15
+        delay: 1s
       mode: replicated
       replicas: 3
       placement:
@@ -46,6 +50,10 @@ services:
         delay: 10s
         parallelism: 2
         failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        max_attempts: 15
+        delay: 1s
       mode: replicated
       replicas: 3
       placement:
@@ -66,6 +74,10 @@ services:
         delay: 5s
         parallelism: 1
         failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 3s
       mode: replicated
       replicas: 3
       placement:
