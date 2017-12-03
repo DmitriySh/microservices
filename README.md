@@ -838,3 +838,20 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 ```
 
  - increase min replica values and check again
+ 
+ 1.3) [Docker Swarm](https://docs.docker.com/engine/swarm/) has routing mesh, load balancer and decentralization architecture. 
+ It helps to route all requests between worker nodes in cluster. Do several requests on concrete host in example
+ 
+ ```bash
+~swarm$ docker-machine ip $(docker-machine ls -q)
+<external_ip_master-1>
+<external_ip_worker-1>
+<external_ip_worker-2>
+<external_ip_worker-3>
+~swarm$ curl <external_ip_worker-3>:9292 | grep "Microservices Reddit in"
+<a class='navbar-brand' href='/'>Microservices Reddit in DEV 03a8760bef10 container</a>
+...
+<a class='navbar-brand' href='/'>Microservices Reddit in DEV 3e1e5763d96e container</a>
+...
+<a class='navbar-brand' href='/'>Microservices Reddit in DEV 5d1bf5267ca2 container</a>
+```
