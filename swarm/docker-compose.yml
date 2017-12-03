@@ -47,6 +47,8 @@ services:
       placement:
         constraints:
           - node.role == worker
+    environment:
+      - ENV=DEV
     ports:
       - ${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp
     networks:
