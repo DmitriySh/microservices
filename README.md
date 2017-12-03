@@ -855,3 +855,10 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 ...
 <a class='navbar-brand' href='/'>Microservices Reddit in DEV 5d1bf5267ca2 container</a>
 ```
+
+1.4) Keep all services into the file `docker-compose.yml` and move all infrastructure services to the file `docker-compose.infra.yml` 
+
+```bash
+~swarm$ docker stack rm DEV
+~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.infra.yml -f docker-compose.yml config 2>/dev/null) DEV
+```
