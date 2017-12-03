@@ -3,6 +3,10 @@ services:
 
   mongo:
     image: mongo:${MONGO_VERSION}
+    deploy:
+      placement:
+        constraints:
+          - node.labels.reliability == high
     volumes:
       - mongo_data:/data/db
     networks:
@@ -13,18 +17,30 @@ services:
 
   post:
     image: ${USERNAME}/post:latest
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
     networks:
       - front_net
       - back_net
 
   comment:
     image: ${USERNAME}/comment:latest
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
     networks:
       - front_net
       - back_net
 
   ui:
     image: ${USERNAME}/ui:latest
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
     ports:
       - ${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp
     networks:
