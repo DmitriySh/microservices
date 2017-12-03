@@ -1,0 +1,78 @@
+version: '3.3'
+services:
+
+  prometheus:
+    image: ${USERNAME}/prometheus
+    ports:
+      - ${PROM_HOST_PORT}:${PROM_CONTAINER_PORT}
+    networks:
+      - front_net
+      - back_net
+
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION}
+    deploy:
+      mode: global
+    user: root
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+    networks:
+      - back_net
+
+  mongodb-exporter:
+    image: ${USERNAME}/mongodb_exporter
+    networks:
+      - back_net
+
+  cadvisor:
+    image: google/cadvisor:latest
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:rw'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    ports:
+      - ${CADV_HOST_PORT}:${CADV_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - ${GF_HOST_PORT}:${GF_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  alertmanager:
+    image: ${USERNAME}/alertmanager
+    command:
+      - '-config.file=/etc/alertmanager/config.yml'
+    ports:
+      - ${ALERTM_HOST_PORT}:${ALERTM_CONTAINER_PORT}
+    networks:
+      - back_net
+
+volumes:
+  grafana_data:
+
+networks:
+  back_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${BACK_NET}
+  front_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${FRONT_NET}
