@@ -19,7 +19,7 @@ services:
     image: ${USERNAME}/post:latest
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       placement:
         constraints:
           - node.role == worker
@@ -31,7 +31,7 @@ services:
     image: ${USERNAME}/comment:latest
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       placement:
         constraints:
           - node.role == worker
@@ -43,7 +43,7 @@ services:
     image: ${USERNAME}/ui:latest
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       placement:
         constraints:
           - node.role == worker
