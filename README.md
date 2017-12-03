@@ -382,7 +382,7 @@ microservices_ui_1         puma                          Up      0.0.0.0:9292->9
 monitoring software products. Let's run and get acquainted with this product.
 
  - create instance in GCE by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
- ```bash
+```bash
 $ docker-machine create --driver google \
 --google-project <project_id> \
 --google-machine-image https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts \
@@ -538,10 +538,10 @@ $ eval $(docker-machine env vm1)
 
  - new service `cadvisor` should be defined in `docker-compose` file and [Prometheus](https://prometheus.io) should get information from here
  - set environment variables for docker-compose
- ```bash
+```bash
 ~compose$ export USERNAME=<dockerhub_login>
 ~compose$ cp .env.example .env
- ```
+```
 
   - rebuild [Prometheus](https://prometheus.io) image and start microservices
 ```bash
@@ -639,7 +639,7 @@ microservices_ui_1                 puma                             Up      0.0.
 ~compose$ docker-compose stop post
 ... wait 1m
 ~compose$ docker-compose up -d post
- ```
+```
 
 
 
@@ -686,9 +686,10 @@ At the end remove docker containers and remote instance of docker machine
 ~swarm$ export USERNAME=dashishmakov
 ```
 
- - rebuild docker image for `ui` service
+ - rebuild docker image for `ui` service and push latest version to [Docker Hub](https://hub.docker.com) repository
 ```bash
 ~swarm/ui$ bash docker_build.sh
+~swarm$ docker push $USERNAME/ui
 ```
 
  - init [Docker Swarm](https://docs.docker.com/engine/swarm/)
@@ -842,7 +843,7 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
  1.3) [Docker Swarm](https://docs.docker.com/engine/swarm/) has routing mesh, load balancer and decentralization architecture. 
  It helps to route all requests between worker nodes in cluster. Do several requests on concrete host in example
  
- ```bash
+```bash
 ~swarm$ docker-machine ip $(docker-machine ls -q)
 <external_ip_master-1>
 <external_ip_worker-1>
