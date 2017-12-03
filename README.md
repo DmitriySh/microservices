@@ -863,3 +863,14 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 ~swarm$ docker stack rm DEV
 ~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.infra.yml -f docker-compose.yml config 2>/dev/null) DEV
 ```
+
+
+
+---
+
+At the end remove docker containers and remote instance of docker machine
+```bash
+~swarm$ docker stack rm DEV
+~swarm$ docker-machine kill $(docker-machine ls -q)
+~swarm$ docker-machine rm $(docker-machine ls -q)
+```
