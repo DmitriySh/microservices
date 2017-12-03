@@ -697,7 +697,7 @@ At the end remove docker containers and remote instance of docker machine
    - node assigned a hostname
    - node listen port 2377
    - node has status `active` and could get task from scheduler
-   - init distributed persistent storage for orchestration
+   - init distributed persistent key-value storage for orchestration
    - generates self-signed root certificate for `swarm`
    - generates tokens to bind `Worker` и `Manager` nodes to the cluster
    - creates overlay-network `Ingress` to publish ports outside the swarm. All nodes participate in an ingress routing mesh
@@ -728,7 +728,7 @@ docker-user@worker-2:~$ sudo docker swarm join \
 This node joined a swarm as a worker.
 ```
 
- - check all nodes in the `swarm`
+ - print all nodes in the `swarm`
 ```bash
 ~swarm$ docker node ls
 ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
@@ -738,12 +738,13 @@ whc2xwhg3rfvbzxp3icpirnd9     worker-2            Ready               Active
 ```
 
 1.2) [Docker Compose](https://docs.docker.com/compose) is a good tool for defining and running multi-container of Docker applications.
- [Docker Compose](https://docs.docker.com/compose) is the heart of `Docker Stack` for `swarm`
+ [Docker Compose](https://docs.docker.com/compose) is the heart of [`Docker Stack`](https://docs.docker.com/engine/reference/commandline/stack/) 
+ and define stack of services for `swarm`
  
  - let's deploy a new `Docker Stack`
 ```bash
-~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) <stack_name>
-~swarm$ docker stack services <stack_name>
+~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) DEV
+~swarm$ docker stack services DEV
 ID                  NAME                MODE                REPLICAS            IMAGE                         PORTS
 kuk8aiu1zb9h        DEV_ui              replicated          1/1                 dashishmakov/ui:latest        *:9292->9292/tcp
 rhq65y0tlqrf        DEV_mongo           replicated          1/1                 mongo:3.2
@@ -771,14 +772,69 @@ Updating service DEV_ui (id: kuk8aiu1zb9hxxwhrvbwjy0o0)
 Updating service DEV_comment (id: td9jgtmq6buyxj7897s2sa6n4)
 ```
 
- - check statuses of containers 
+ - check statuses of containers and scaling by all nodes
+   - 1x scale on master node (mongo) - no scaling
+   - 2x scale on worker nodes (ui, pos, comment) - replicated scaling
+   - 3x scale on master and worker nodes (node-exporter) - global replicated
 ```bash
 ~swarm$ docker stack ps DEV
-ID                  NAME                IMAGE                         NODE                DESIRED STATE       CURRENT STATE              ERROR               PORTS
-oqsmddkcj1iq        DEV_comment.1       dashishmakov/comment:latest   worker-2            Running             Preparing 12 seconds ago
-u699vk83e2i7        DEV_ui.1            dashishmakov/ui:latest        worker-2            Running             Preparing 21 seconds ago
-jic5u0vk2mkw        DEV_post.1          dashishmakov/post:latest      worker-1            Running             Running 22 seconds ago
-quvmp86hzb8c        DEV_mongo.1         mongo:3.2                     master-1            Running             Running 11 seconds ago
+ID                  NAME                                          IMAGE                         NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+mit4pxws64uk        DEV_node-exporter.h4rf9on49q2v2n623ei0a2zlg   prom/node-exporter:v0.15.0    worker-1            Running             Running 25 seconds ago
+bqn4962cey46        DEV_node-exporter.1scjwp239x4ajg5kabr1kv0wm   prom/node-exporter:v0.15.0    master-1            Running             Running 25 seconds ago
+zhpe6t4zw4qa        DEV_node-exporter.whc2xwhg3rfvbzxp3icpirnd9   prom/node-exporter:v0.15.0    worker-2            Running             Running 23 seconds ago
+oqsmddkcj1iq        DEV_comment.1                                 dashishmakov/comment:latest   worker-2            Running             Running 12 hours ago
+u699vk83e2i7        DEV_ui.1                                      dashishmakov/ui:latest        worker-2            Running             Running 12 hours ago
+jic5u0vk2mkw        DEV_post.1                                    dashishmakov/post:latest      worker-1            Running             Running 12 hours ago
+quvmp86hzb8c        DEV_mongo.1                                   mongo:3.2                     master-1            Running             Running 12 hours ago
+bivw1mfilrc0        DEV_comment.2                                 dashishmakov/comment:latest   worker-1            Running             Running 23 minutes ago
+fgucvzrvfbdo        DEV_ui.2                                      dashishmakov/ui:latest        worker-1            Running             Running 23 minutes ago
+iwgd5gjlxfmk        DEV_post.2                                    dashishmakov/post:latest      worker-2            Running             Running 24 minutes ago
 ```
 
- - 
+- add new one worker node to `swarm`
+```bash
+~swarm$ docker-machine create --driver google \
+   --google-project <project_id> \
+   --google-zone europe-west1-b \
+   --google-machine-type g1-small \
+   --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
+   worker-3
+   
+~swarm$ docker swarm join-token worker
+To add a worker to this swarm, run the following command:
+    docker swarm join --token SWMTKN-1-0wo27ownjz1zgw0zsbit5e7aa69r7td8a91tpvnu5m32cenbtp-bmrtyoioou9zupoc2w9sug6zv <master-1_internal_ip>:2377
+
+~swarm$ docker-machine ssh worker-3
+Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.10.0-40-generic x86_64)
+...
+docker-user@worker-3:~$ sudo docker swarm join \
+--token SWMTKN-1-0wo27ownjz1zgw0zsbit5e7aa69r7td8a91tpvnu5m32cenbtp-bmrtyoioou9zupoc2w9sug6zv \
+<master-1_internal_ip>:2377
+This node joined a swarm as a worker.
+```
+
+ - check statuses of containers and scaling by all 4 nodes
+```bash
+~swarm$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
+1scjwp239x4ajg5kabr1kv0wm *   master-1            Ready               Active              Leader
+h4rf9on49q2v2n623ei0a2zlg     worker-1            Ready               Active
+whc2xwhg3rfvbzxp3icpirnd9     worker-2            Ready               Active
+pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
+
+~swarm$ docker stack ps DEV
+ ID                  NAME                                          IMAGE                         NODE                DESIRED STATE       CURRENT STATE               ERROR               PORTS
+ vyjf8tvz9f3n        DEV_node-exporter.pt2fhi36b036eo2yvbm8giplk   prom/node-exporter:v0.15.0    worker-3            Running             Running 10 minutes ago
+ mit4pxws64uk        DEV_node-exporter.h4rf9on49q2v2n623ei0a2zlg   prom/node-exporter:v0.15.0    worker-1            Running             Running 26 minutes ago
+ bqn4962cey46        DEV_node-exporter.1scjwp239x4ajg5kabr1kv0wm   prom/node-exporter:v0.15.0    master-1            Running             Running 26 minutes ago
+ zhpe6t4zw4qa        DEV_node-exporter.whc2xwhg3rfvbzxp3icpirnd9   prom/node-exporter:v0.15.0    worker-2            Running             Running 26 minutes ago
+ oqsmddkcj1iq        DEV_comment.1                                 dashishmakov/comment:latest   worker-2            Running             Running 12 hours ago
+ u699vk83e2i7        DEV_ui.1                                      dashishmakov/ui:latest        worker-2            Running             Running 12 hours ago
+ jic5u0vk2mkw        DEV_post.1                                    dashishmakov/post:latest      worker-1            Running             Running 12 hours ago
+ quvmp86hzb8c        DEV_mongo.1                                   mongo:3.2                     master-1            Running             Running 12 hours ago
+ bivw1mfilrc0        DEV_comment.2                                 dashishmakov/comment:latest   worker-1            Running             Running about an hour ago
+ fgucvzrvfbdo        DEV_ui.2                                      dashishmakov/ui:latest        worker-1            Running             Running about an hour ago
+ iwgd5gjlxfmk        DEV_post.2                                    dashishmakov/post:latest      worker-2            Running             Running about an hour ago
+```
+
+ - increase min replica values and check again
