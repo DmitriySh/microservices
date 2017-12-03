@@ -381,7 +381,7 @@ microservices_ui_1         puma                          Up      0.0.0.0:9292->9
 1.1) [Prometheus](https://prometheus.io) is a powerful time-series monitoring service, providing a flexible platform for
 monitoring software products. Let's run and get acquainted with this product.
 
- - create instance in GCE by `docker-machine`. Change the environment variables for the Docker Client and connect to the remote Docker Engine
+ - create instance in GCE by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
  ```bash
 $ docker-machine create --driver google \
 --google-project <project_id> \
@@ -519,7 +519,7 @@ microservices_ui_1                 puma                             Up      0.0.
 It collects, aggregates, processes, and might to exports information to various storages such as 
 [Prometheus](https://prometheus.io), [ElasticSearch](https://www.elastic.co), [InfluxDB](https://www.influxdata.com), [Kafka](http://kafka.apache.org) and simple stdout.
 
- - create instance in GCE by `docker-machine`. Change the environment variables for the Docker Client and connect to the remote Docker Engine
+ - create instance in GCE by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
 ```bash
 $ docker-machine create --driver google \
 --google-project <project_id> \
@@ -655,7 +655,7 @@ At the end remove docker containers and remote instance of docker machine
 
 ## Homework 27
 
-1) [Docker](https://www.docker.com/) include `swarm` mode for natively managing a cluster of Docker Engines called a [Docker Swarm](https://docs.docker.com/engine/swarm/).
+1.1) [Docker](https://www.docker.com/) include `swarm` mode for natively managing a cluster of Docker Engines called a [Docker Swarm](https://docs.docker.com/engine/swarm/).
 [Docker Swarm](https://docs.docker.com/engine/swarm/) available out of the box for cluster management and orchestration features.
 
  - create several instances in GCE by `docker-machine`. 
@@ -680,7 +680,7 @@ At the end remove docker containers and remote instance of docker machine
    worker-2
 ```
 
- - change the environment variables for the Docker Client and connect to the remote `master-1` Docker Engine
+ - Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine` (node `master-1`)
 ```bash
 ~swarm$ eval $(docker-machine env master-1)
 ~swarm$ export USERNAME=dashishmakov
@@ -702,5 +702,83 @@ At the end remove docker containers and remote instance of docker machine
    - generates tokens to bind `Worker` и `Manager` nodes to the cluster
    - creates overlay-network `Ingress` to publish ports outside the swarm. All nodes participate in an ingress routing mesh
 ```bash
-~swarm$ docker swarm init
+~swarm$ docker swarm init --advertise-addr <master-1_internal_ip>:2377
+Swarm initialized: current node (1scjwp239x4ajg5kabr1kv0wm) is now a manager.
+To add a worker to this swarm, run the following command:
+    docker swarm join --token SWMTKN-1-0wo27ownjz1zgw0zsbit5e7aa69r7td8a91tpvnu5m32cenbtp-bmrtyoioou9zupoc2w9sug6zv <master-1_internal_ip>:2377
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
 ```
+
+ - add `worker-1` and `worker-2` to `swarm` cluster
+```bash
+~swarm$ docker-machine ssh worker-1
+Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.10.0-40-generic x86_64)
+...
+docker-user@worker-1:~$ sudo docker swarm join \
+--token SWMTKN-1-0wo27ownjz1zgw0zsbit5e7aa69r7td8a91tpvnu5m32cenbtp-bmrtyoioou9zupoc2w9sug6zv \
+<master-1_internal_ip>:2377
+This node joined a swarm as a worker.
+
+~swarm$ docker-machine ssh worker-2
+Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.10.0-40-generic x86_64)
+...
+docker-user@worker-2:~$ sudo docker swarm join \
+--token SWMTKN-1-0wo27ownjz1zgw0zsbit5e7aa69r7td8a91tpvnu5m32cenbtp-bmrtyoioou9zupoc2w9sug6zv \
+<master-1_internal_ip>:2377
+This node joined a swarm as a worker.
+```
+
+ - check all nodes in the `swarm`
+```bash
+~swarm$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
+1scjwp239x4ajg5kabr1kv0wm *   master-1            Ready               Active              Leader
+h4rf9on49q2v2n623ei0a2zlg     worker-1            Ready               Active
+whc2xwhg3rfvbzxp3icpirnd9     worker-2            Ready               Active
+```
+
+1.2) [Docker Compose](https://docs.docker.com/compose) is a good tool for defining and running multi-container of Docker applications.
+ [Docker Compose](https://docs.docker.com/compose) is the heart of `Docker Stack` for `swarm`
+ 
+ - let's deploy a new `Docker Stack`
+```bash
+~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) <stack_name>
+~swarm$ docker stack services <stack_name>
+ID                  NAME                MODE                REPLICAS            IMAGE                         PORTS
+kuk8aiu1zb9h        DEV_ui              replicated          1/1                 dashishmakov/ui:latest        *:9292->9292/tcp
+rhq65y0tlqrf        DEV_mongo           replicated          1/1                 mongo:3.2
+td9jgtmq6buy        DEV_comment         replicated          1/1                 dashishmakov/comment:latest
+vlykfrg53f15        DEV_post            replicated          1/1                 dashishmakov/post:latest
+```
+
+ - add `label` to the master node
+```bash
+~swarm$ docker node update --label-add reliability=high master-1
+master-1
+```
+
+ - describe all available `labels`
+```bash
+~swarm$ docker node ls -q | xargs docker node inspect  -f '{{ .ID }} [{{ .Description.Hostname }}]: {{ .Spec.Labels }}'
+```
+
+ - update `Docker Stack`
+```bash
+~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) DEV
+Updating service DEV_mongo (id: rhq65y0tlqrfb5fwb110xrsts)
+Updating service DEV_post (id: vlykfrg53f15t41di63ocpefo)
+Updating service DEV_ui (id: kuk8aiu1zb9hxxwhrvbwjy0o0)
+Updating service DEV_comment (id: td9jgtmq6buyxj7897s2sa6n4)
+```
+
+ - check statuses of containers 
+```bash
+~swarm$ docker stack ps DEV
+ID                  NAME                IMAGE                         NODE                DESIRED STATE       CURRENT STATE              ERROR               PORTS
+oqsmddkcj1iq        DEV_comment.1       dashishmakov/comment:latest   worker-2            Running             Preparing 12 seconds ago
+u699vk83e2i7        DEV_ui.1            dashishmakov/ui:latest        worker-2            Running             Preparing 21 seconds ago
+jic5u0vk2mkw        DEV_post.1          dashishmakov/post:latest      worker-1            Running             Running 22 seconds ago
+quvmp86hzb8c        DEV_mongo.1         mongo:3.2                     master-1            Running             Running 11 seconds ago
+```
+
+ - 
