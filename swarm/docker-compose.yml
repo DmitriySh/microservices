@@ -18,6 +18,10 @@ services:
   post:
     image: ${USERNAME}/post:latest
     deploy:
+      update_config:
+        delay: 10s
+        parallelism: 2
+        failure_action: rollback
       mode: replicated
       replicas: 3
       placement:
@@ -30,6 +34,10 @@ services:
   comment:
     image: ${USERNAME}/comment:latest
     deploy:
+      update_config:
+        delay: 10s
+        parallelism: 2
+        failure_action: rollback
       mode: replicated
       replicas: 3
       placement:
@@ -42,6 +50,10 @@ services:
   ui:
     image: ${USERNAME}/ui:latest
     deploy:
+      update_config:
+        delay: 5s
+        parallelism: 1
+        failure_action: rollback
       mode: replicated
       replicas: 3
       placement:
