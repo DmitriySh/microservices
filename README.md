@@ -739,10 +739,10 @@ whc2xwhg3rfvbzxp3icpirnd9     worker-2            Ready               Active
 ```
 
 1.2) [Docker Compose](https://docs.docker.com/compose) is a good tool for defining and running multi-container of Docker applications.
- [Docker Compose](https://docs.docker.com/compose) is the heart of [`Docker Stack`](https://docs.docker.com/engine/reference/commandline/stack/) 
+ [Docker Compose](https://docs.docker.com/compose) is the heart of [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/) 
  and define stack of services for `swarm`
  
- - let's deploy a new `Docker Stack`
+ - let's deploy a new [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
 ```bash
 ~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) DEV
 ~swarm$ docker stack services DEV
@@ -764,7 +764,7 @@ master-1
 ~swarm$ docker node ls -q | xargs docker node inspect  -f '{{ .ID }} [{{ .Description.Hostname }}]: {{ .Spec.Labels }}'
 ```
 
- - update `Docker Stack`
+ - update [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
 ```bash
 ~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) DEV
 Updating service DEV_mongo (id: rhq65y0tlqrfb5fwb110xrsts)
@@ -857,7 +857,7 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 <a class='navbar-brand' href='/'>Microservices Reddit in DEV 5d1bf5267ca2 container</a>
 ```
 
-1.4) Keep all services into the file `docker-compose.yml` and move all infrastructure services to the file `docker-compose.infra.yml` 
+1.4) Keep all services into the file `docker-compose.yml` and all infrastructure services to the file `docker-compose.infra.yml` 
 
 ```bash
 ~swarm$ docker stack rm DEV
