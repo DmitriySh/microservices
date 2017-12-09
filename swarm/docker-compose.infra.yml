@@ -31,7 +31,7 @@ services:
       - back_net
 
   cadvisor:
-    image: google/cadvisor:latest
+    image: google/cadvisor:${CADVISOR_VERSION}
     volumes:
       - '/:/rootfs:ro'
       - '/var/run:/var/run:rw'

@@ -16,7 +16,7 @@ services:
           - comment_db
 
   post:
-    image: ${USERNAME}/post:latest
+    image: ${USERNAME}/post:${POST_VERSION}
     deploy:
       resources:
         limits:
@@ -40,7 +40,7 @@ services:
       - back_net
 
   comment:
-    image: ${USERNAME}/comment:latest
+    image: ${USERNAME}/comment:${COMMENT_VERSION}
     deploy:
       resources:
         limits:
@@ -64,7 +64,7 @@ services:
       - back_net
 
   ui:
-    image: ${USERNAME}/ui:latest
+    image: ${USERNAME}/ui:${UI_VERSION}
     deploy:
       resources:
         limits:
