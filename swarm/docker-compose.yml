@@ -1,0 +1,98 @@
+version: '3.3'
+services:
+
+  mongo:
+    image: mongo:${MONGO_VERSION}
+    deploy:
+      placement:
+        constraints:
+          - node.labels.reliability == high
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      back_net:
+        aliases:
+          - post_db
+          - comment_db
+
+  post:
+    image: ${USERNAME}/post:${POST_VERSION}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 300M
+      update_config:
+        delay: 10s
+        parallelism: 2
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        max_attempts: 15
+        delay: 1s
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == worker
+    networks:
+      - front_net
+      - back_net
+
+  comment:
+    image: ${USERNAME}/comment:${COMMENT_VERSION}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 300M
+      update_config:
+        delay: 10s
+        parallelism: 2
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        max_attempts: 15
+        delay: 1s
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == worker
+    networks:
+      - front_net
+      - back_net
+
+  ui:
+    image: ${USERNAME}/ui:${UI_VERSION}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 150M
+      update_config:
+        delay: 5s
+        parallelism: 1
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 3s
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - ENV=DEV
+    ports:
+      - ${UI_HOST_PORT}:${UI_CONTAINER_PORT}/tcp
+    networks:
+      - front_net
+
+volumes:
+  mongo_data:
+
+networks:
+  back_net: {}
+  front_net: {}

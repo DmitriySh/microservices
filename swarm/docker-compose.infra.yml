@@ -1,0 +1,86 @@
+version: '3.3'
+services:
+
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION}
+    ports:
+      - ${PROM_HOST_PORT}:${PROM_CONTAINER_PORT}
+    configs:
+      - source: prometheus_yml
+        target: /etc/prometheus/prometheus.yml
+      - source: prometheus_alert
+        target: /etc/prometheus/alert.rules.yml
+    networks:
+      - front_net
+      - back_net
+
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION}
+    deploy:
+      mode: global
+    user: root
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+    networks:
+      - back_net
+
+  mongodb-exporter:
+    image: ${USERNAME}/mongodb_exporter
+    networks:
+      - back_net
+
+  cadvisor:
+    image: google/cadvisor:${CADVISOR_VERSION}
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:rw'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    ports:
+      - ${CADV_HOST_PORT}:${CADV_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - ${GF_HOST_PORT}:${GF_CONTAINER_PORT}
+    networks:
+      - back_net
+
+  alertmanager:
+    image: prom/alertmanager
+    command:
+      - '-config.file=/etc/alertmanager/config.yml'
+    ports:
+      - ${ALERTM_HOST_PORT}:${ALERTM_CONTAINER_PORT}
+    configs:
+      - source: alertmanager_config
+        target: /etc/alertmanager/config.yml
+    networks:
+      - back_net
+
+volumes:
+  grafana_data:
+
+configs:
+  alertmanager_config:
+    file: ./config/config.yml
+  prometheus_yml:
+    file: ./config/prometheus.yml
+  prometheus_alert:
+    file: ./config/alert.rules.yml
+
+networks:
+  back_net: {}
+  front_net: {}
