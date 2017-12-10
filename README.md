@@ -665,6 +665,11 @@ At the end remove docker containers and remote instance of docker machine
    --google-zone europe-west1-b \
    --google-machine-type g1-small \
    --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
+   --google-open-port 80/tcp \
+   --google-open-port 3000/tcp \
+   --google-open-port 8080/tcp \
+   --google-open-port 9090/tcp \
+   --google-open-port 9292/tcp \   
    master-1
 ~swarm$ docker-machine create --driver google \
    --google-project <project_id> \

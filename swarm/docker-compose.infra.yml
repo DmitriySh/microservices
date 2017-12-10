@@ -2,9 +2,14 @@ version: '3.3'
 services:
 
   prometheus:
-    image: ${USERNAME}/prometheus
+    image: prom/prometheus:${PROMETHEUS_VERSION}
     ports:
       - ${PROM_HOST_PORT}:${PROM_CONTAINER_PORT}
+    configs:
+      - source: prometheus_yml
+        target: /etc/prometheus/prometheus.yml
+      - source: prometheus_alert
+        target: /etc/prometheus/alert.rules.yml
     networks:
       - front_net
       - back_net
@@ -54,16 +59,27 @@ services:
       - back_net
 
   alertmanager:
-    image: ${USERNAME}/alertmanager
+    image: prom/alertmanager
     command:
       - '-config.file=/etc/alertmanager/config.yml'
     ports:
       - ${ALERTM_HOST_PORT}:${ALERTM_CONTAINER_PORT}
+    configs:
+      - source: alertmanager_config
+        target: /etc/alertmanager/config.yml
     networks:
       - back_net
 
 volumes:
   grafana_data:
+
+configs:
+  alertmanager_config:
+    file: ./config/config.yml
+  prometheus_yml:
+    file: ./config/prometheus.yml
+  prometheus_alert:
+    file: ./config/alert.rules.yml
 
 networks:
   back_net: {}
