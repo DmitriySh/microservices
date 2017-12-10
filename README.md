@@ -6,8 +6,8 @@ DevOps course, practices with [Google Cloud Platform](https://cloud.google.com/)
 
 ## Homework 15
 
-[Docker](https://www.docker.com/) helps to package the software into standardized units for development, shipment and deployment. 
-Containers are lightweight by design and ideal for enabling microservices application development. 
+[Docker](https://www.docker.com/) helps to package the software into standardized units for development, shipment and deployment.
+Containers are lightweight by design and ideal for enabling microservices application development.
 
 Use [Docker](https://www.docker.com/) to create instance in GCE and publish docker image in [Docker Hub](https://hub.docker.com/).
 
@@ -250,7 +250,7 @@ NAME          ACTIVE   DRIVER   STATE     URL                        SWARM   DOC
 docker-host   *        google   Running   tcp://<host_ip>:2376           v17.10.0-ce
 ```
 
- - Run container `net_test` with `none` network driver that has timer and will deleted after 100 sec. 
+ - Run container `net_test` with `none` network driver that has timer and will deleted after 100 sec.
  Container has Loopback network interface only.
 ```bash
 ~$ docker run --network none --rm -d --name net_test joffotron/docker-net-tools -c "sleep 100"
@@ -359,7 +359,7 @@ DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:9292 to:10
 
 #### docker-compose
 
-A service definition contains configuration which will be applied to each container started for that service, 
+A service definition contains configuration which will be applied to each container started for that service,
 much like passing command-line parameters to `docker run`, `docker network`, `docker volume`
 
  - Set environment variables for `docker-compose`
@@ -515,8 +515,8 @@ microservices_ui_1                 puma                             Up      0.0.
 
 ## Homework 23
 
-1.1) Docker's container monitoring. [cAdvisor](https://github.com/google/cadvisor) analyzes resource usage and performance characteristics of running containers. 
-It collects, aggregates, processes, and might to exports information to various storages such as 
+1.1) Docker's container monitoring. [cAdvisor](https://github.com/google/cadvisor) analyzes resource usage and performance characteristics of running containers.
+It collects, aggregates, processes, and might to exports information to various storages such as
 [Prometheus](https://prometheus.io), [ElasticSearch](https://www.elastic.co), [InfluxDB](https://www.influxdata.com), [Kafka](http://kafka.apache.org) and simple stdout.
 
  - create instance in GCE by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
@@ -587,7 +587,7 @@ microservices_ui_1                 puma                             Up      0.0.
  - download shared dashboard `Docker and system monitoring` from [Dashboards](https://grafana.com/dashboards) and import it
 
 1.2.2) Let's create new dashboard `UI Service Monitoring` for [Grafana](https://grafana.com):
- 
+
  - `main menu` -> `dashboards` -> `new`
    - `graph` -> `edit panel title` -> `metrics` tab -> `data source`: Prometheus Server -> select metric `ui_request_count`
    - tune graph: refresh `every 10 seconds` and show `last 15 minutes`
@@ -616,8 +616,8 @@ microservices_ui_1                 puma                             Up      0.0.
  - export dashbord to JSON file
 
 
- 1.3) Alerts help to know about some problems in production environment at the same time when that happens. 
- Let's add WebHook for your own [Slack](https://slack.com) channel to get notifications in some accident cases. 
+ 1.3) Alerts help to know about some problems in production environment at the same time when that happens.
+ Let's add WebHook for your own [Slack](https://slack.com) channel to get notifications in some accident cases.
  [Alertmanager](https://prometheus.io/docs/alerting/alertmanager/) is a component for [Prometheus](https://prometheus.io) that handle alerts and rote sufisticated notifications
 
  - new service `alertmanager` should be defined in `docker-compose.yml` and `prometheus.yml` that [Prometheus](https://prometheus.io) should to know about it 
@@ -669,7 +669,7 @@ At the end remove docker containers and remote instance of docker machine
    --google-open-port 3000/tcp \
    --google-open-port 8080/tcp \
    --google-open-port 9090/tcp \
-   --google-open-port 9292/tcp \   
+   --google-open-port 9292/tcp \
    master-1
 ~swarm$ docker-machine create --driver google \
    --google-project <project_id> \
@@ -744,7 +744,7 @@ whc2xwhg3rfvbzxp3icpirnd9     worker-2            Ready               Active
 ```
 
 1.2) [Docker Compose](https://docs.docker.com/compose) is a good tool for defining and running multi-container of Docker applications.
- [Docker Compose](https://docs.docker.com/compose) is the heart of [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/) 
+ [Docker Compose](https://docs.docker.com/compose) is the heart of [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
  and define stack of services for `swarm`
  
  - let's deploy a new [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
