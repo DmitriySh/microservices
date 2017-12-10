@@ -879,3 +879,14 @@ At the end remove docker containers and remote instance of docker machine
 ~swarm$ docker-machine kill $(docker-machine ls -q)
 ~swarm$ docker-machine rm $(docker-machine ls -q)
 ```
+
+## Homework 28
+
+[Kubernetes](https://kubernetes.io) is a system for automating deployment, scaling, and management of containerized applications.
+It groups containers that make up an application into logical units for easy management and discovery.
+
+[Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) is a guide written by Kelsey Hightower, 
+Developer Advocate from [Google, Inc](https://www.google.com/intl/en_en/about/our-company/). 
+It is optimized for learning to ensure you understand each task required to bootstrap a Kubernetes cluster.
+
+

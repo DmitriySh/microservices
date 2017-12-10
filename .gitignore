@@ -1,7 +1,7 @@
 # MacOS
 *.DS_Store
 
-# Docker compose env
+# Docker env
 .env
 
 # Intellij
@@ -13,3 +13,6 @@
 # Project logs
 *.log
 *build_info.txt
+
+# Kubernetes
+kubernetes/kubernetes_the_hard_way/auth
