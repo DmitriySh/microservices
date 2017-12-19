@@ -885,8 +885,24 @@ At the end remove docker containers and remote instance of docker machine
 [Kubernetes](https://kubernetes.io) is a system for automating deployment, scaling, and management of containerized applications.
 It groups containers that make up an application into logical units for easy management and discovery.
 
-[Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) is a guide written by Kelsey Hightower, 
+1.1) [Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) is a guide written by Kelsey Hightower, 
 Developer Advocate from [Google, Inc](https://www.google.com/intl/en_en/about/our-company/). 
 It is optimized for learning to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
+1.2) Deploy test pods in [Kubernetes](https://kubernetes.io) environment at the end of tutorial before chapter 
+[Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
+```bash
+~kubernetes_the_hard_way$ kubectl apply -f post-deployment.yml
+~kubernetes_the_hard_way$ kubectl apply -f comment-deployment.yml
+~kubernetes_the_hard_way$ kubectl apply -f ui-deployment.yml
+~kubernetes_the_hard_way$ kubectl apply -f mongo-deployment.yml
 
+~kubernetes_the_hard_way$ kubectl get pods
+NAME                                  READY     STATUS              RESTARTS   AGE
+busybox-855686df5d-4mkr9              1/1       Running             0          18m
+comment-deployment-5cdd78fdff-bpxjh   1/1       Running             0          5m
+mongo-deployment-75f8f476fb-25fsx     0/1       ContainerCreating   0          3m
+nginx-8586cf59-dwj86                  1/1       Running             0          16m
+post-deployment-7b946f8bb5-94dsn      1/1       Running             0          6m
+ui-deployment-b9d9d4d9-ggfhk          1/1       Running             0          4m
+```
