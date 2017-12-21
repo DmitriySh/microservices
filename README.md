@@ -901,7 +901,7 @@ It is optimized for learning to ensure you understand each task required to boot
 NAME                                  READY     STATUS              RESTARTS   AGE
 busybox-855686df5d-4mkr9              1/1       Running             0          18m
 comment-deployment-5cdd78fdff-bpxjh   1/1       Running             0          5m
-mongo-deployment-75f8f476fb-25fsx     0/1       ContainerCreating   0          3m
+mongo-deployment-5d95d48bf8-4pbgl     1/1       Running             0          8m
 nginx-8586cf59-dwj86                  1/1       Running             0          16m
 post-deployment-7b946f8bb5-94dsn      1/1       Running             0          6m
 ui-deployment-b9d9d4d9-ggfhk          1/1       Running             0          4m

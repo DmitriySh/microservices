@@ -17,5 +17,3 @@ spec:
       containers:
       - image: mongo:3.2
         name: mongo
-      - port: 27017
-        targetPort: 27017
