@@ -892,10 +892,10 @@ It is optimized for learning to ensure you understand each task required to boot
 1.2) Deploy test pods in [Kubernetes](https://kubernetes.io) environment at the end of tutorial before chapter 
 [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
 ```bash
-~kubernetes_the_hard_way$ kubectl apply -f post-deployment.yml
-~kubernetes_the_hard_way$ kubectl apply -f comment-deployment.yml
-~kubernetes_the_hard_way$ kubectl apply -f ui-deployment.yml
-~kubernetes_the_hard_way$ kubectl apply -f mongo-deployment.yml
+~kubernetes_the_hard_way$ kubectl apply -f ./deployments/post-deployment.yml
+~kubernetes_the_hard_way$ kubectl apply -f ./deployments/comment-deployment.yml
+~kubernetes_the_hard_way$ kubectl apply -f ./deployments/ui-deployment.yml
+~kubernetes_the_hard_way$ kubectl apply -f ./deployments/mongo-deployment.yml
 
 ~kubernetes_the_hard_way$ kubectl get pods
 NAME                                  READY     STATUS              RESTARTS   AGE
