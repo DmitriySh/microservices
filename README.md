@@ -906,3 +906,6 @@ nginx-8586cf59-dwj86                  1/1       Running             0          1
 post-deployment-7b946f8bb5-94dsn      1/1       Running             0          6m
 ui-deployment-b9d9d4d9-ggfhk          1/1       Running             0          4m
 ```
+
+1.3) Read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
+to delete compute resources created during this tutorial
