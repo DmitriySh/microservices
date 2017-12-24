@@ -909,3 +909,118 @@ ui-deployment-b9d9d4d9-ggfhk          1/1       Running             0          4
 
 1.3) Read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
 to delete compute resources created during this tutorial
+
+
+## Homework 29
+
+Wide the knowledge about [Kubernetes](https://kubernetes.io). [Minikube](https://github.com/kubernetes/minikube) 
+is a tool that makes it easy to run [Kubernetes](https://kubernetes.io) locally. It runs a single-node [Kubernetes](https://kubernetes.io) cluster 
+inside a VM on your desktop computer to try out [Kubernetes](https://kubernetes.io).
+
+1.1) [Minikube](https://github.com/kubernetes/minikube) need one of virtalization: 
+ - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (default), 
+ - [KVM](https://www.linux-kvm.org/page/Main_Page), 
+ - [VMware Fusion](https://www.vmware.com/products/fusion.html), 
+ - [xhyve](https://github.com/mist64/xhyve) 
+ or other
+ 
+ - run small [Kubernetes](https://kubernetes.io) cluster
+```bash
+~kubernetes$ minikube start
+Starting local Kubernetes v1.8.0 cluster...
+Starting VM..
+...
+Connecting to cluster...
+Setting up kubeconfig...
+Starting cluster components...
+Kubectl is now configured to use the cluster.
+Loading cached images from config file.
+```
+
+ - `kubectl` was configured for this cluster and let's look at nodes and pods are running in the empty cluster
+```bash
+~kubernetes$ kubectl get nodes
+NAME       STATUS    ROLES     AGE       VERSION
+minikube   Ready     <none>    56m       v1.8.0
+
+~kubernetes$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                          READY     STATUS    RESTARTS   AGE
+kube-system   kube-addon-manager-minikube   1/1       Running   0          56m
+kube-system   kube-dns-86f6f55dd5-dksv9     3/3       Running   0          56m
+kube-system   kubernetes-dashboard-lr7v4    1/1       Running   0          56m
+kube-system   storage-provisioner           1/1       Running   0          56m
+```
+
+ - `kubectl` could manage different clusters with different users by `context`
+```
+~kubernetes$ cat ~/.kube/config
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /Users/dima/.minikube/ca.crt
+    server: https://192.168.99.100:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    as-user-extra: {}
+    client-certificate: /Users/dima/.minikube/client.crt
+    client-key: /Users/dima/.minikube/client.key
+    
+~kubernetes$ kubectl config get-contexts
+CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
+*         minikube   minikube   minikube
+```
+
+1.2) 
+
+ - apply deployments for all components
+```bash
+~$ kubectl apply -f ./ui-deployment.yml
+deployment "ui" created
+
+~$ kubectl apply -f ./comment-deployment.yml
+deployment "comment" created
+
+~$ kubectl apply -f ./post-deployment.yml
+deployment "post" created
+
+~$ kubectl apply -f ./mongo-deployment.yml
+deployment "mongo" created
+
+~kubernetes$ kubectl get deployment
+NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+comment   3         3         3            3           3m
+mongo     1         1         1            1           44s
+post      3         3         3            3           7m
+ui        3         3         3            3           17m
+```
+
+ - apply services for deployments
+```bash
+~$ kubectl apply -f ./post-service.yml
+service "post" created
+
+~$ kubectl apply -f ./comment-service.yml
+service "comment" created
+
+~$ kubectl apply -f ./comment-mongodb-service.yml
+service "comment-db" created
+
+~$ kubectl get services
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
+comment      ClusterIP   10.98.7.144      <none>        9292/TCP    50m
+comment-db   ClusterIP   10.102.187.149   <none>        27017/TCP   12m
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP     2h
+post         ClusterIP   10.101.94.213    <none>        5000/TCP    55m
+```
+
+1.3) 
