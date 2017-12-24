@@ -924,17 +924,24 @@ inside a VM on your desktop computer to try out [Kubernetes](https://kubernetes.
  - [xhyve](https://github.com/mist64/xhyve) 
  or other
  
- - run small [Kubernetes](https://kubernetes.io) cluster
+ - run small [Kubernetes](https://kubernetes.io) cluster of 1 node
 ```bash
 ~kubernetes$ minikube start
 Starting local Kubernetes v1.8.0 cluster...
-Starting VM..
-...
+Starting VM...
+Getting VM IP address...
+Moving files into cluster...
+Setting up certs...
 Connecting to cluster...
 Setting up kubeconfig...
 Starting cluster components...
 Kubectl is now configured to use the cluster.
 Loading cached images from config file.
+
+~kubernetes$ minikube status
+minikube: Running
+cluster: Running
+kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
 ```
 
  - `kubectl` was configured for this cluster and let's look at nodes and pods are running in the empty cluster
@@ -952,7 +959,7 @@ kube-system   storage-provisioner           1/1       Running   0          56m
 ```
 
  - `kubectl` could manage different clusters with different users by `context`
-```
+```bash
 ~kubernetes$ cat ~/.kube/config
 apiVersion: v1
 clusters:
@@ -984,43 +991,71 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 
  - apply deployments for all components
 ```bash
-~$ kubectl apply -f ./ui-deployment.yml
+~kubernetes$ kubectl apply -f ./deployments
+deployment "comment" created
+deployment "mongo" created
+deployment "post" created
 deployment "ui" created
 
-~$ kubectl apply -f ./comment-deployment.yml
-deployment "comment" created
-
-~$ kubectl apply -f ./post-deployment.yml
-deployment "post" created
-
-~$ kubectl apply -f ./mongo-deployment.yml
-deployment "mongo" created
+~kubernetes$ kubectl get pods -o wide
+NAME                       READY     STATUS    RESTARTS   AGE       IP            NODE
+comment-6576c99dfc-dgcls   1/1       Running   0          3m       172.17.0.6    minikube
+comment-6576c99dfc-fnzpx   1/1       Running   0          3m       172.17.0.4    minikube
+comment-6576c99dfc-jvrr2   1/1       Running   0          3m       172.17.0.8    minikube
+mongo-95f974ff5-nqz5r      1/1       Running   0          3m       172.17.0.14   minikube
+post-78f54477b9-5tt99      1/1       Running   0          3m       172.17.0.10   minikube
+post-78f54477b9-rshhf      1/1       Running   0          3m       172.17.0.7    minikube
+post-78f54477b9-zz8cd      1/1       Running   0          3m       172.17.0.5    minikube
+ui-cd75bf6d5-4ffqx         1/1       Running   0          3m       172.17.0.13   minikube
+ui-cd75bf6d5-czk8n         1/1       Running   0          3m       172.17.0.12   minikube
+ui-cd75bf6d5-nqthw         1/1       Running   0          3m       172.17.0.11   minikube
 
 ~kubernetes$ kubectl get deployment
 NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-comment   3         3         3            3           3m
-mongo     1         1         1            1           44s
-post      3         3         3            3           7m
-ui        3         3         3            3           17m
+comment   3         3         3            3           2m
+mongo     1         1         1            1           2m
+post      3         3         3            3           2m
+ui        3         3         3            3           2m
 ```
 
- - apply services for deployments
+ - let's check out programs health into `pods` by forwarding local port to target port
 ```bash
-~$ kubectl apply -f ./post-service.yml
+~kubernetes$ kubectl port-forward <ui-pod> 8080:9292
+Forwarding from 127.0.0.1:8080 -> 9292
+
+~kubernetes$ kubectl port-forward <post-pod> 5000:5000
+Forwarding from 127.0.0.1:5000 -> 5000
+
+~kubernetes$ kubectl port-forward <comment-pod> 9292:9292
+Forwarding from 127.0.0.1:9292 -> 9292 
+```
+
+ - Open URL [http://localhost:8080](http://localhost:8080), [http://localhost:5000/healthcheck](http://localhost:5000/healthcheck), 
+ [http://localhost:9292/healthcheck](http://localhost:9292/healthcheck) and test the apps
+
+ - [Kubernetes](https://kubernetes.io) services help to automates port forwarding for deployments
+```bash
+~kubernetes$ kubectl apply -f ./services
+service "comment-db" created
+service "comment" created
+service "post-db" created
 service "post" created
 
-~$ kubectl apply -f ./comment-service.yml
-service "comment" created
-
-~$ kubectl apply -f ./comment-mongodb-service.yml
-service "comment-db" created
-
-~$ kubectl get services
-NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
-comment      ClusterIP   10.98.7.144      <none>        9292/TCP    50m
-comment-db   ClusterIP   10.102.187.149   <none>        27017/TCP   12m
-kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP     2h
-post         ClusterIP   10.101.94.213    <none>        5000/TCP    55m
+~kubernetes$  kubectl get services -o wide
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE       SELECTOR
+comment      ClusterIP   10.103.177.123   <none>        9292/TCP    12m       app=reddit,component=comment
+comment-db   ClusterIP   10.99.107.79     <none>        27017/TCP   12m       app=reddit,comment-db=true,component=mongo
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP     55m       <none>
+post         ClusterIP   10.110.243.67    <none>        5000/TCP    12m       app=reddit,component=post
+post-db      ClusterIP   10.104.224.229   <none>        27017/TCP   21s       app=reddit,component=mongo,post-db=true
 ```
+
+ - let's check out that `ui` could save posts and comments
+```bash
+~kubernetes$ kubectl port-forward <ui-pod> 8080:9292
+Forwarding from 127.0.0.1:8080 -> 9292
+```
+
+- Open URL [http://localhost:8080](http://localhost:8080)
 
 1.3) 
