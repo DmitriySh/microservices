@@ -1042,20 +1042,18 @@ service "post-db" created
 service "post" created
 
 ~kubernetes$  kubectl get services -o wide
-NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE       SELECTOR
-comment      ClusterIP   10.103.177.123   <none>        9292/TCP    12m       app=reddit,component=comment
-comment-db   ClusterIP   10.99.107.79     <none>        27017/TCP   12m       app=reddit,comment-db=true,component=mongo
-kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP     55m       <none>
-post         ClusterIP   10.110.243.67    <none>        5000/TCP    12m       app=reddit,component=post
-post-db      ClusterIP   10.104.224.229   <none>        27017/TCP   21s       app=reddit,component=mongo,post-db=true
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE       SELECTOR
+comment      ClusterIP   10.103.177.123   <none>        9292/TCP         28m       app=reddit,component=comment
+comment-db   ClusterIP   10.99.107.79     <none>        27017/TCP        28m       app=reddit,comment-db=true,component=mongo
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP          1h        <none>
+post         ClusterIP   10.110.243.67    <none>        5000/TCP         28m       app=reddit,component=post
+post-db      ClusterIP   10.104.224.229   <none>        27017/TCP        28m       app=reddit,component=mongo,post-db=true
+ui           NodePort    10.96.169.222    <none>        9292:32092/TCP   28m       app=reddit,component=ui
 ```
 
  - let's check out that `ui` could save posts and comments
 ```bash
-~kubernetes$ kubectl port-forward <ui-pod> 8080:9292
-Forwarding from 127.0.0.1:8080 -> 9292
+~kubernetes$ minikube service ui
 ```
-
-- Open URL [http://localhost:8080](http://localhost:8080)
 
 1.3) 
