@@ -987,7 +987,7 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 *         minikube   minikube   minikube
 ```
 
-1.2) 
+1.2) Run application into `k8s`
 
  - apply deployments for all components
 ```bash
@@ -1056,4 +1056,39 @@ ui           NodePort    10.96.169.222    <none>        9292:32092/TCP   28m    
 ~kubernetes$ minikube service ui
 ```
 
-1.3) 
+1.3) [Kubernetes](https://kubernetes.io) provides several addons. [Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui) 
+it is one of the addons that can be used to manage a cluster from UI, get detailed information about state.
+
+ - list of addons available from [Minikube](https://github.com/kubernetes/minikube)
+```bash
+~kubernetes$ minikube addons list
+```
+
+ - enable `dashboard` and run it
+```bash
+~kubernetes$ minikube addons enable dashboard
+~kubernetes$ minikube dashboard
+```
+
+1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) - is a virtual clusters 
+with separate scope for names. It helps to divide cluster resources between multiple users
+
+ - create new namespace `dev` and run `pods`, `services` into `dev`
+```bash
+~kubernetes$ kubectl apply -f ./dev-namespace.yml
+namespace "dev" created
+
+~kubernetes$ kubectl get namespaces
+NAME          STATUS    AGE
+default       Active    5h
+dev           Active    3m
+kube-public   Active    5h
+kube-system   Active    5h
+
+kubectl -n dev apply -f ./deployments
+kubectl -n dev apply -f ./service
+``` 
+
+ - you need to change `nodePort` in `ui-service.yml` if you want to run `pods` and `services` into `dev` namespace parallel `default` 
+
+2.1) 
