@@ -1057,7 +1057,7 @@ ui           NodePort    10.96.169.222    <none>        9292:32092/TCP   28m    
 ```
 
 1.3) [Kubernetes](https://kubernetes.io) provides several addons. [Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui) 
-it is one of the addons that can be used to manage a cluster from UI, get detailed information about state.
+is one of the addons that can be used to manage a cluster from UI, get detailed information about state.
 
  - list of addons available from [Minikube](https://github.com/kubernetes/minikube)
 ```bash
@@ -1070,7 +1070,7 @@ it is one of the addons that can be used to manage a cluster from UI, get detail
 ~kubernetes$ minikube dashboard
 ```
 
-1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) - is a virtual clusters 
+1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) is a virtual clusters 
 with separate scope for names. It helps to divide cluster resources between multiple users
 
  - create new namespace `dev` and run `pods`, `services` into `dev`
@@ -1102,7 +1102,7 @@ Deleting local Kubernetes cluster...
 Machine deleted.
 ```
 
-2) [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) is a managed environment for deploying containerized application.
+2.1) [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) is a managed environment for deploying containerized application.
 This is service based on instances from `GCE`
 
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and configure `kubectl`
