@@ -9,15 +9,15 @@ DevOps course, practices with [Google Cloud Platform](https://cloud.google.com/)
 [Docker](https://www.docker.com/) helps to package the software into standardized units for development, shipment and deployment.
 Containers are lightweight by design and ideal for enabling microservices application development.
 
-Use [Docker](https://www.docker.com/) to create instance in GCE and publish docker image in [Docker Hub](https://hub.docker.com/).
+Use [Docker](https://www.docker.com/) to create instance in `GCE` and publish docker image in [Docker Hub](https://hub.docker.com/).
 
- - Configure `gcloud` and create new GCE project `docker`
+ - Configure `gcloud` and create new `GCE` project `docker`
 ```bash
 ~$ gcloud init
 ~$ gcloud auth application-default login
 ```
 
- - Create instance in GCE by `docker-machine` and change the environment variables for the `Docker Client`.
+ - Create instance in `GCE` by `docker-machine` and change the environment variables for the `Docker Client`.
   It should connect to remote `Docker Engine`.
 ```bash
 ~$ docker-machine create --driver google \
@@ -95,7 +95,7 @@ The push refers to a repository [docker.io/dashishmakov/otus-reddit]
 
 ## Homework 16
 
- - Create instance in GCE by `docker-machine` and change the environment variables for the `Docker Client`.
+ - Create instance in `GCE` by `docker-machine` and change the environment variables for the `Docker Client`.
   It should connect to remote `Docker Engine`.
 ```bash
 ~$ docker-machine create --driver google \
@@ -235,7 +235,7 @@ d25e4f7d898d        dashishmakov/ui:1.0        "puma"                   2 hours 
 ## Homework 17
 
 
- - Create instance in GCE by `docker-machine` and change the environment variables for the `Docker Client`.
+ - Create instance in `GCE` by `docker-machine` and change the environment variables for the `Docker Client`.
   It should connect to remote `Docker Engine`.
 ```bash
 ~$ docker-machine create --driver google \
@@ -308,7 +308,7 @@ Let's create different network interfaces and separate `ui` from `db`
 - Open URL [http://<host_ip>:9292](http://<host_ip>:9292) and test the app
 
 
-- Let's look at the current Linux network stack on virtual instance in GCE
+- Let's look at the current Linux network stack on virtual instance in `GCE`
 ```bash
 ~$ docker-machine ssh docker-host
 ~$ sudo apt-get update && sudo apt-get install bridge-utils
@@ -381,7 +381,7 @@ microservices_ui_1         puma                          Up      0.0.0.0:9292->9
 1.1) [Prometheus](https://prometheus.io) is a powerful time-series monitoring service, providing a flexible platform for
 monitoring software products. Let's run and get acquainted with this product.
 
- - create instance in GCE by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
+ - create instance in `GCE` by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
 ```bash
 $ docker-machine create --driver google \
 --google-project <project_id> \
@@ -519,7 +519,7 @@ microservices_ui_1                 puma                             Up      0.0.
 It collects, aggregates, processes, and might to exports information to various storages such as
 [Prometheus](https://prometheus.io), [ElasticSearch](https://www.elastic.co), [InfluxDB](https://www.influxdata.com), [Kafka](http://kafka.apache.org) and simple stdout.
 
- - create instance in GCE by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
+ - create instance in `GCE` by `docker-machine`. Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine`
 ```bash
 $ docker-machine create --driver google \
 --google-project <project_id> \
@@ -658,7 +658,7 @@ At the end remove docker containers and remote instance of docker machine
 1.1) [Docker](https://www.docker.com/) include `swarm` mode for natively managing a cluster of Docker Engines called a [Docker Swarm](https://docs.docker.com/engine/swarm/).
 [Docker Swarm](https://docs.docker.com/engine/swarm/) available out of the box for cluster management and orchestration features.
 
- - create several instances in GCE by `docker-machine`. 
+ - create several instances in `GCE` by `docker-machine`. 
 ```bash
 ~swarm$ docker-machine create --driver google \
    --google-project <project_id> \
@@ -685,7 +685,7 @@ At the end remove docker containers and remote instance of docker machine
    worker-2
 ```
 
- - Change the environment variables for the `Docker Client` and connect to the remote `Docker Engine` (node `master-1`)
+ - change the environment variables for the `Docker Client` and connect to the remote `Docker Engine` (node `master-1`)
 ```bash
 ~swarm$ eval $(docker-machine env master-1)
 ~swarm$ export USERNAME=dashishmakov
@@ -1030,7 +1030,7 @@ Forwarding from 127.0.0.1:5000 -> 5000
 Forwarding from 127.0.0.1:9292 -> 9292 
 ```
 
- - Open URL [http://localhost:8080](http://localhost:8080), [http://localhost:5000/healthcheck](http://localhost:5000/healthcheck), 
+ - open URL [http://localhost:8080](http://localhost:8080), [http://localhost:5000/healthcheck](http://localhost:5000/healthcheck), 
  [http://localhost:9292/healthcheck](http://localhost:9292/healthcheck) and test the apps
 
  - [Kubernetes](https://kubernetes.io) services help to automates port forwarding for deployments
@@ -1085,10 +1085,89 @@ dev           Active    3m
 kube-public   Active    5h
 kube-system   Active    5h
 
-kubectl -n dev apply -f ./deployments
-kubectl -n dev apply -f ./service
+~kubernetes$ kubectl -n dev apply -f ./deployments
+~kubernetes$ kubectl -n dev apply -f ./service
 ``` 
 
- - you need to change `nodePort` in `ui-service.yml` if you want to run `pods` and `services` into `dev` namespace parallel `default` 
+ - you need to change `nodePort` in `ui-service.yml` if you want to run `pods` and `services` into second `dev` namespace parallel `default`
 
-2.1) 
+1.5) Stop and delete local [Kubernetes](https://kubernetes.io) cluster provided by [Minikube](https://github.com/kubernetes/minikube)
+```bash
+~kubernetes$ minikube stop
+Stopping local Kubernetes cluster...
+Machine stopped.
+
+~kubernetes$ minikube delete
+Deleting local Kubernetes cluster...
+Machine deleted.
+```
+
+2) [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) is a managed environment for deploying containerized application.
+This is service based on instances from `GCE`
+
+ - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and configure `kubectl`
+```bash
+~kubernetes$ gcloud container clusters get-credentials cluster-1 --zone us-central1-a --project <project_id>
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for cluster-1.
+
+~kubernetes$ kubectl config current-context
+gke_project_id_us-central1-a_cluster-1
+```
+
+ - create namespace and deploy components
+```bash
+~kubernetes$ kubectl apply -f ./dev-namespace.yml
+namespace "dev" created
+
+~kubernetes$ kubectl apply -f ./deployments -n dev
+deployment "comment" created
+deployment "mongo" created
+deployment "post" created
+deployment "ui" created
+
+~kubernetes$ kubectl get pods -n dev -o wide
+NAME                      READY     STATUS    RESTARTS   AGE       IP          NODE
+comment-b986998b4-49q2w   1/1       Running   0          2m       10.8.1.7    gke-cluster-1-default-pool-2b69dddc-zwtm
+comment-b986998b4-gf6wv   1/1       Running   0          2m       10.8.0.7    gke-cluster-1-default-pool-2b69dddc-257l
+comment-b986998b4-zcdpv   1/1       Running   0          2m       10.8.1.8    gke-cluster-1-default-pool-2b69dddc-zwtm
+mongo-77dcb74cd5-5f5hl    1/1       Running   0          2m       10.8.0.8    gke-cluster-1-default-pool-2b69dddc-257l
+post-c994fb486-n9t44      1/1       Running   0          2m       10.8.1.9    gke-cluster-1-default-pool-2b69dddc-zwtm
+post-c994fb486-vlg76      1/1       Running   0          2m       10.8.1.10   gke-cluster-1-default-pool-2b69dddc-zwtm
+post-c994fb486-zmdwm      1/1       Running   0          2m       10.8.0.9    gke-cluster-1-default-pool-2b69dddc-257l
+ui-759c55c666-cftxf       1/1       Running   0          2m       10.8.0.10   gke-cluster-1-default-pool-2b69dddc-257l
+ui-759c55c666-smz6s       1/1       Running   0          2m       10.8.0.11   gke-cluster-1-default-pool-2b69dddc-257l
+ui-759c55c666-wt48f       1/1       Running   0          2m       10.8.1.11   gke-cluster-1-default-pool-2b69dddc-zwtm
+
+~kubernetes$ kubectl apply -f ./services -n dev
+service "comment-db" unchanged
+service "comment" unchanged
+service "post-db" unchanged
+service "post" unchanged
+service "ui" created
+
+~kubernetes$ kubectl get services -n dev -o wide
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE       SELECTOR
+comment      ClusterIP   10.11.255.50    <none>        9292/TCP         3m       app=reddit,component=comment
+comment-db   ClusterIP   10.11.254.190   <none>        27017/TCP        3m       app=reddit,comment-db=true,component=mongo
+post         ClusterIP   10.11.253.17    <none>        5000/TCP         3m       app=reddit,component=post
+post-db      ClusterIP   10.11.242.153   <none>        27017/TCP        3m       app=reddit,component=mongo,post-db=true
+ui           NodePort    10.11.252.11    <none>        9292:32092/TCP   3m       app=reddit,component=ui
+```
+
+ - create firewall rule for `tcp:30000-32767`, source `0.0.0.0/0`
+ 
+ - let's check availability `ui` component in [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/)
+```bash
+$ kubectl get nodes -o wide
+NAME                                       STATUS    ROLES     AGE       VERSION        EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
+gke-cluster-1-default-pool-2b69dddc-257l   Ready     <none>    1h        v1.8.3-gke.0   35.225.188.134   Container-Optimized OS from Google   4.4.64+          docker://1.13.1
+gke-cluster-1-default-pool-2b69dddc-zwtm   Ready     <none>    1h        v1.8.3-gke.0   35.184.139.79    Container-Optimized OS from Google   4.4.64+          docker://1.13.1
+
+$ kubectl describe service ui -n dev | grep -i nodeport
+Type:                     NodePort
+NodePort:                 <unset>  32092/TCP
+```
+
+ - open URL [http://\<external-ip\>:\<node-port\>](http://\<external-ip\>:\<node-port\>)
+
