@@ -907,7 +907,14 @@ post-deployment-7b946f8bb5-94dsn      1/1       Running             0          6
 ui-deployment-b9d9d4d9-ggfhk          1/1       Running             0          4m
 ```
 
-1.3) Read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
+---
+
+ - at the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
+```bash
+~kubernetes_the_hard_way$ kubectl config delete-context kubernetes-the-hard-way
+~kubernetes_the_hard_way$ kubectl config delete-cluster kubernetes-the-hard-way
+```
+ - read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
 to delete compute resources created during this tutorial
 
 
@@ -918,15 +925,14 @@ is a tool that makes it easy to run [Kubernetes](https://kubernetes.io) locally.
 inside a VM on your desktop computer to try out [Kubernetes](https://kubernetes.io).
 
 1.1) [Minikube](https://github.com/kubernetes/minikube) need one of virtalization: 
- - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (default), 
- - [KVM](https://www.linux-kvm.org/page/Main_Page), 
- - [VMware Fusion](https://www.vmware.com/products/fusion.html), 
- - [xhyve](https://github.com/mist64/xhyve) 
- or other
+[VirtualBox](https://www.virtualbox.org/wiki/Downloads) (default), 
+[KVM](https://www.linux-kvm.org/page/Main_Page), 
+[VMware Fusion](https://www.vmware.com/products/fusion.html), 
+[xhyve](https://github.com/mist64/xhyve) or other. Will use [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
  
  - run small [Kubernetes](https://kubernetes.io) cluster of 1 node
 ```bash
-~kubernetes$ minikube start
+~kubernetes$ minikube start <--vm-driver=virtualbox>
 Starting local Kubernetes v1.8.0 cluster...
 Starting VM...
 Getting VM IP address...
@@ -991,11 +997,17 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 
  - apply deployments for all components
 ```bash
-~kubernetes$ kubectl apply -f ./deployments
+~kubernetes$ kubectl apply -f ./comment/comment-deployment.yml -n dev
 deployment "comment" created
-deployment "mongo" created
+
+~kubernetes$ kubectl apply -f ./post/post-deployment.yml -n dev
 deployment "post" created
+
+~kubernetes$ kubectl apply -f ./ui/ui-deployment.yml -n dev
 deployment "ui" created
+
+~kubernetes$ kubectl apply -f ./mongo/mongo-deployment.yml -n dev
+deployment "mongo" created
 
 ~kubernetes$ kubectl get pods -o wide
 NAME                       READY     STATUS    RESTARTS   AGE       IP            NODE
@@ -1035,11 +1047,20 @@ Forwarding from 127.0.0.1:9292 -> 9292
 
  - [Kubernetes](https://kubernetes.io) services help to automates port forwarding for deployments
 ```bash
-~kubernetes$ kubectl apply -f ./services
-service "comment-db" created
-service "comment" created
-service "post-db" created
+~kubernetes$ kubectl apply -f ./ui/ui-service.yml
+service "ui" created
+
+~kubernetes$ kubectl apply -f ./post/post-service.yml
 service "post" created
+
+~kubernetes$ kubectl apply -f ./comment/comment-service.yml
+service "comment" created
+
+~kubernetes$ kubectl apply -f ./mongo/comment-mongodb-service.yml
+service "comment-db" created
+
+~kubernetes$ kubectl apply -f ./mongo/post-mongodb-service.yml
+service "post-db" created
 
 ~kubernetes$  kubectl get services -o wide
 NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE       SELECTOR
@@ -1105,69 +1126,125 @@ Machine deleted.
 2.1) [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) is a managed environment for deploying containerized application.
 This is service based on instances from `GCE`
 
- - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and configure `kubectl`
+ - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
-~kubernetes$ gcloud container clusters get-credentials cluster-1 --zone us-central1-a --project <project_id>
+~kubernetes$ gcloud container clusters create cluster-1 \
+   --project <project_id> \
+   --cluster-version 1.8.3-gke.0 \
+   --disk-size=20 \
+   --machine-type=g1-small \
+   --num-nodes=2 \
+   --no-enable-basic-auth
+Creating cluster cluster-1...done.
+Created [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
+kubeconfig entry generated for cluster-1.
+NAME       LOCATION    MASTER_VERSION  MASTER_IP      MACHINE_TYPE  NODE_VERSION  NUM_NODES  STATUS
+cluster-1  us-west1-c  1.8.3-gke.0     35.197.95.173  g1-small      1.8.3-gke.0   2          RUNNING
+
+~kubernetes$ gcloud container clusters get-credentials cluster-1 --zone us-west1-c --project <project_id>
 Fetching cluster endpoint and auth data.
 kubeconfig entry generated for cluster-1.
 
 ~kubernetes$ kubectl config current-context
-gke_project_id_us-central1-a_cluster-1
+gke_kubernetes-188619_us-west1-c_cluster-1
 ```
 
- - create namespace and deploy components
+ - 2 worker nodes are basic `compute engine nodes`
+```bash
+~kubernetes$ gcloud compute instances list
+NAME                                      ZONE        MACHINE_TYPE  PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP    STATUS
+gke-cluster-1-default-pool-93c565d1-wx7r  us-west1-c  g1-small                   10.138.0.2   35.197.70.210  RUNNING
+gke-cluster-1-default-pool-93c565d1-z45m  us-west1-c  g1-small                   10.138.0.3   35.197.6.193   RUNNING
+```
+
+ - create custom namespace `dev`
 ```bash
 ~kubernetes$ kubectl apply -f ./dev-namespace.yml
 namespace "dev" created
 
-~kubernetes$ kubectl apply -f ./deployments -n dev
+~ kubernetes$ kubectl get namespaces
+NAME          STATUS    AGE
+default       Active    24m
+dev           Active    11s
+kube-public   Active    24m
+kube-system   Active    24m
+```
+
+ - deploy components and run services
+```bash
+~kubernetes$ kubectl apply -f ./comment -n dev
 deployment "comment" created
-deployment "mongo" created
+service "comment" created
+
+~kubernetes$ kubectl apply -f ./post -n dev
 deployment "post" created
+service "post" created
+
+~kubernetes$ kubectl apply -f ./ui -n dev
 deployment "ui" created
+service "ui" created
+
+~kubernetes$ kubectl apply -f ./mongo -n dev
+service "comment-db" created
+deployment "mongo" created
+service "post-db" created
 
 ~kubernetes$ kubectl get pods -n dev -o wide
-NAME                      READY     STATUS    RESTARTS   AGE       IP          NODE
-comment-b986998b4-49q2w   1/1       Running   0          2m       10.8.1.7    gke-cluster-1-default-pool-2b69dddc-zwtm
-comment-b986998b4-gf6wv   1/1       Running   0          2m       10.8.0.7    gke-cluster-1-default-pool-2b69dddc-257l
-comment-b986998b4-zcdpv   1/1       Running   0          2m       10.8.1.8    gke-cluster-1-default-pool-2b69dddc-zwtm
-mongo-77dcb74cd5-5f5hl    1/1       Running   0          2m       10.8.0.8    gke-cluster-1-default-pool-2b69dddc-257l
-post-c994fb486-n9t44      1/1       Running   0          2m       10.8.1.9    gke-cluster-1-default-pool-2b69dddc-zwtm
-post-c994fb486-vlg76      1/1       Running   0          2m       10.8.1.10   gke-cluster-1-default-pool-2b69dddc-zwtm
-post-c994fb486-zmdwm      1/1       Running   0          2m       10.8.0.9    gke-cluster-1-default-pool-2b69dddc-257l
-ui-759c55c666-cftxf       1/1       Running   0          2m       10.8.0.10   gke-cluster-1-default-pool-2b69dddc-257l
-ui-759c55c666-smz6s       1/1       Running   0          2m       10.8.0.11   gke-cluster-1-default-pool-2b69dddc-257l
-ui-759c55c666-wt48f       1/1       Running   0          2m       10.8.1.11   gke-cluster-1-default-pool-2b69dddc-zwtm
-
-~kubernetes$ kubectl apply -f ./services -n dev
-service "comment-db" unchanged
-service "comment" unchanged
-service "post-db" unchanged
-service "post" unchanged
-service "ui" created
+NAME                      READY     STATUS    RESTARTS   AGE       IP           NODE
+comment-b986998b4-rcltn   1/1       Running   0          2m        10.16.1.8    gke-cluster-1-default-pool-93c565d1-z45m
+comment-b986998b4-vjv88   1/1       Running   0          2m        10.16.0.7    gke-cluster-1-default-pool-93c565d1-wx7r
+comment-b986998b4-x9flw   1/1       Running   0          2m        10.16.0.8    gke-cluster-1-default-pool-93c565d1-wx7r
+mongo-77dcb74cd5-vs48h    1/1       Running   0          1m        10.16.1.9    gke-cluster-1-default-pool-93c565d1-z45m
+post-c994fb486-bq94b      1/1       Running   0          1m        10.16.1.10   gke-cluster-1-default-pool-93c565d1-z45m
+post-c994fb486-cb7sh      1/1       Running   0          1m        10.16.0.10   gke-cluster-1-default-pool-93c565d1-wx7r
+post-c994fb486-qfc76      1/1       Running   0          1m        10.16.0.9    gke-cluster-1-default-pool-93c565d1-wx7r
+ui-759c55c666-5kqbs       1/1       Running   0          1m        10.16.1.11   gke-cluster-1-default-pool-93c565d1-z45m
+ui-759c55c666-64s5m       1/1       Running   0          1m        10.16.0.11   gke-cluster-1-default-pool-93c565d1-wx7r
+ui-759c55c666-jj6jn       1/1       Running   0          1m        10.16.1.12   gke-cluster-1-default-pool-93c565d1-z45m
 
 ~kubernetes$ kubectl get services -n dev -o wide
 NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE       SELECTOR
-comment      ClusterIP   10.11.255.50    <none>        9292/TCP         3m       app=reddit,component=comment
-comment-db   ClusterIP   10.11.254.190   <none>        27017/TCP        3m       app=reddit,comment-db=true,component=mongo
-post         ClusterIP   10.11.253.17    <none>        5000/TCP         3m       app=reddit,component=post
-post-db      ClusterIP   10.11.242.153   <none>        27017/TCP        3m       app=reddit,component=mongo,post-db=true
-ui           NodePort    10.11.252.11    <none>        9292:32092/TCP   3m       app=reddit,component=ui
+comment      ClusterIP   10.19.248.233   <none>        9292/TCP         2m        app=reddit,component=comment
+comment-db   ClusterIP   10.19.249.36    <none>        27017/TCP        2m        app=reddit,comment-db=true,component=mongo
+post         ClusterIP   10.19.244.202   <none>        5000/TCP         2m        app=reddit,component=post
+post-db      ClusterIP   10.19.251.2     <none>        27017/TCP        2m        app=reddit,component=mongo,post-db=true
+ui           NodePort    10.19.249.191   <none>        9292:32092/TCP   2m        app=reddit,component=ui
 ```
 
- - create firewall rule for `tcp:30000-32767`, source `0.0.0.0/0`
+ - create firewall rule to open range of ports for [Kubernetes](https://kubernetes.io) services
+```bash
+~kubernetes$ gcloud compute firewall-rules create default-k8s-ports\
+ --project=kubernetes-188619 \
+ --direction=INGRESS \
+ --priority=1000 \
+ --action=ALLOW \
+ --description="Range port for k8s" \
+ --rules=tcp:30000-32767 \
+ --source-ranges=0.0.0.0/0
+ 
+~kubernetes$ gcloud compute firewall-rules list --filter k8s
+NAME               NETWORK  DIRECTION  PRIORITY  ALLOW            DENY
+default-k8s-ports  default  INGRESS    1000      tcp:30000-32767
+```
  
  - let's check availability `ui` component in [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/)
 ```bash
-$ kubectl get nodes -o wide
+~kubernetes$ kubectl get nodes -o wide
 NAME                                       STATUS    ROLES     AGE       VERSION        EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
 gke-cluster-1-default-pool-2b69dddc-257l   Ready     <none>    1h        v1.8.3-gke.0   35.225.188.134   Container-Optimized OS from Google   4.4.64+          docker://1.13.1
 gke-cluster-1-default-pool-2b69dddc-zwtm   Ready     <none>    1h        v1.8.3-gke.0   35.184.139.79    Container-Optimized OS from Google   4.4.64+          docker://1.13.1
 
-$ kubectl describe service ui -n dev | grep -i nodeport
+~kubernetes$ kubectl describe service ui -n dev | grep -i nodeport
 Type:                     NodePort
 NodePort:                 <unset>  32092/TCP
 ```
 
  - open URL [http://\<external-ip\>:\<node-port\>](http://\<external-ip\>:\<node-port\>)
 
+
+---
+
+At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
+```bash
+~kubernetes$ gcloud container clusters delete cluster-1
+```
