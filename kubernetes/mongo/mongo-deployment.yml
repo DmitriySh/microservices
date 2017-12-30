@@ -16,7 +16,7 @@ spec:
       component: mongo
   template:
     metadata:
-      name: mongo
+      name: mongo-pod
       labels:
         app: reddit
         component: mongo
