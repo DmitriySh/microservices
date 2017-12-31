@@ -1248,3 +1248,48 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 ```bash
 ~kubernetes$ gcloud container clusters delete cluster-1
 ```
+
+
+## Homework 30
+[Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
+[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules 
+that allow inbound connections to reach the cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers) 
+is an implementation.
+
+ - deploy components and run services
+```bash
+~kubernetes$ kubectl apply -f ./comment -n dev
+deployment "comment" created
+service "comment" created
+
+~kubernetes$ kubectl apply -f ./post -n dev
+deployment "post" created
+service "post" created
+
+~kubernetes$ kubectl apply -f ./ui -n dev
+deployment "ui" created
+ingress "ui" configured
+service "ui" created
+
+~kubernetes$ kubectl apply -f ./mongo -n dev
+service "comment-db" created
+deployment "mongo" created
+service "post-db" created
+```
+
+ - be aware that HTTP load balancing (inner [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)) is enabled
+```bash
+~kubernetes$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
+Updating cluster-1...done.
+Updated [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
+```
+
+ - get external ip address for [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)
+```bash
+~kubernetes$ kubectl get ingress -n dev
+NAME      HOSTS     ADDRESS          PORTS     AGE
+ui        *         35.227.206.190   80        2m
+```
+
+ - open URL [http://\<ingress-ip\>:80>](http://\<external-ip\>:80>) and be aware component is available
+ 
