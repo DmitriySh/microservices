@@ -1313,22 +1313,60 @@ service "post-db" created
 ~kubernetes$ kubectl get ingress -n dev
 NAME      HOSTS     ADDRESS          PORTS     AGE
 ui        *         35.227.242.167   80        2m
+```
 
+ - add TLS encryption for transmission data in [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~kubernetes$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=<ingress-ip>"
+Generating a 2048 bit RSA private key
+........................................................+++
+..............................................+++
+writing new private key to 'tls.key'
+-----
+
+~kubernetes$ kubectl create secret tls ui-ingress --key tls.key --cert tls.crt -n dev
+secret "ui-ingress" created
+
+~kubernetes$ kubectl describe secret ui-ingress -n dev
+Name:         ui-ingress
+Namespace:    dev
+Labels:       <none>
+Annotations:  <none>
+
+Type:  kubernetes.io/tls
+
+Data
+====
+tls.crt:  989 bytes
+tls.key:  1704 bytes
+```
+
+ - look at [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
 ~kubernetes$ kubectl describe ingress ui -n dev
 Name:             ui
 Namespace:        dev
-Address:
-Default backend:  default-http-backend:80 (10.16.1.5:8080)
+Address:          35.227.206.190
+Default backend:  ui:9292 (10.16.0.15:9292,10.16.1.16:9292,10.16.1.17:9292)
+TLS:
+  ui-ingress terminates
 Rules:
   Host  Path  Backends
   ----  ----  --------
-  *
-        /   ui:9292 (<none>)
+  *     *     ui:9292 (10.16.0.15:9292,10.16.1.16:9292,10.16.1.17:9292)
 Annotations:
+  backends:               {"k8s-be-30838--902e46559c424f67":"HEALTHY"}
+  https-forwarding-rule:  k8s-fws-dev-ui--902e46559c424f67
+  https-target-proxy:     k8s-tps-dev-ui--902e46559c424f67
+  ssl-cert:               k8s-ssl-dev-ui--902e46559c424f67
+  url-map:                k8s-um-dev-ui--902e46559c424f67
 Events:
-  Type    Reason  Age   From                     Message
-  ----    ------  ----  ----                     -------
-  Normal  ADD     13s   loadbalancer-controller  dev/ui
+  Type    Reason   Age               From                     Message
+  ----    ------   ----              ----                     -------
+  Normal  ADD      13m               loadbalancer-controller  dev/ui
+  Normal  CREATE   12m               loadbalancer-controller  ip: 35.227.206.190
+  Normal  Service  5m (x5 over 12m)  loadbalancer-controller  default backend set to ui:30838
 ```
 
- - open URL [http://\<ingress-ip\>:80>](http://\<ingress-ip\>:80>) and be aware components are available
+ - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
+ if it necessary wait a few minutes
