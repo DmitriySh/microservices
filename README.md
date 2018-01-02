@@ -1267,17 +1267,6 @@ is an implementation.
    --no-enable-basic-auth
 ```
 
- - create custom data volume in `GCE`
-```bash
-~kubernetes$ gcloud compute disks create --size=25GB reddit-mongo-disk
-NAME               ZONE        SIZE_GB  TYPE         STATUS
-reddit-mongo-disk  us-west1-c  25       pd-standard  READY
-
-~kubernetes$ gcloud compute disks list
-NAME               ZONE        SIZE_GB  TYPE         STATUS
-reddit-mongo-disk  us-west1-c  25       pd-standard  READY
-```
-
  - create custom namespace `dev`
 ```bash
 ~kubernetes$ kubectl apply -f ./dev-namespace.yml
@@ -1317,6 +1306,15 @@ service "ui" created
 service "comment-db" created
 deployment "mongo" created
 service "post-db" created
+```
+
+ - let's check storage `PersistentVolume`
+```bash
+~kubernetes$ kubectl get persistentvolume -n dev
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                   STORAGECLASS   REASON    AGE
+pvc-32d03f99-efef-11e7-8276-42010a8a009b   10Gi       RWO            Delete           Bound       dev/mongo-pvc-dynamic   fast                     11s
+pvc-dab87556-efeb-11e7-8276-42010a8a009b   15Gi       RWO            Delete           Bound       dev/mongo-pvc           standard                 24m
+reddit-mongo-disk                          25Gi       RWO            Retain           Available                                                    24m
 ```
 
  - get external ip address for [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)
