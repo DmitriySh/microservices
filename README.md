@@ -1253,9 +1253,11 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 ## Homework 30
 
 [Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
+
 [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules 
 and configuration for routing external HTTP(S) traffic to internal cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers) 
 is an implementation.
+
 [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) describe `PersistentVolume` and `PersistentVolumeClaim` that 
 help to manage one persistence storage for all PODs in the cluster. 
 
