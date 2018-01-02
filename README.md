@@ -1396,5 +1396,6 @@ Events:
 At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 ```bash
 ~kubernetes$ gcloud container clusters delete cluster-1
+~kubernetes$ gcloud compute disks delete <name_1> <name_2> ... <name_N>
 ```
 
