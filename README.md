@@ -1251,10 +1251,13 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 
 
 ## Homework 30
-1.1) [Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
+
+[Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
 [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules 
 and configuration for routing external HTTP(S) traffic to internal cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers) 
 is an implementation.
+[Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) describe `PersistentVolume` and `PersistentVolumeClaim` that 
+help to manage one persistence storage for all PODs in the cluster. 
 
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
@@ -1299,13 +1302,18 @@ service "post" created
 
 ~kubernetes$ kubectl apply -f ./ui -n dev
 deployment "ui" created
-ingress "ui" configured
+ingress "ui" created
 service "ui" created
 
 ~kubernetes$ kubectl apply -f ./mongo -n dev
+storageclass "fast" created
 service "comment-db" created
-deployment "mongo" created
 service "post-db" created
+persistentvolumeclaim "mongo-pvc-dynamic" created
+persistentvolumeclaim "mongo-pvc" created
+deployment "mongo" created
+networkpolicy "deny-db-traffic" created
+persistentvolume "reddit-mongo-disk" created
 ```
 
  - let's check storage `PersistentVolume`
