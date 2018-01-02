@@ -1267,6 +1267,17 @@ is an implementation.
    --no-enable-basic-auth
 ```
 
+ - create custom data volume in `GCE`
+```bash
+~kubernetes$ gcloud compute disks create --size=25GB reddit-mongo-disk
+NAME               ZONE        SIZE_GB  TYPE         STATUS
+reddit-mongo-disk  us-west1-c  25       pd-standard  READY
+
+~kubernetes$ gcloud compute disks list
+NAME               ZONE        SIZE_GB  TYPE         STATUS
+reddit-mongo-disk  us-west1-c  25       pd-standard  READY
+```
+
  - create custom namespace `dev`
 ```bash
 ~kubernetes$ kubectl apply -f ./dev-namespace.yml
@@ -1369,4 +1380,4 @@ Events:
 ```
 
  - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
- if it necessary wait a few minutes
+ wait a few minutes until the initialization is completed
