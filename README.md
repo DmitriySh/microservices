@@ -1251,10 +1251,41 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 
 
 ## Homework 30
-[Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
+1.1) [Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
 [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules 
-that allow inbound connections to reach the cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers) 
+and configuration for routing external HTTP(S) traffic to internal cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers) 
 is an implementation.
+
+ - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
+```bash
+~kubernetes$ gcloud container clusters create cluster-1 \
+   --project kubernetes-188619 \
+   --cluster-version 1.8.3-gke.0 \
+   --disk-size=20 \
+   --machine-type=g1-small \
+   --num-nodes=2 \
+   --no-enable-basic-auth
+```
+
+ - create custom namespace `dev`
+```bash
+~kubernetes$ kubectl apply -f ./dev-namespace.yml
+namespace "dev" created
+
+~ kubernetes$ kubectl get namespaces
+NAME          STATUS    AGE
+default       Active    24m
+dev           Active    11s
+kube-public   Active    24m
+kube-system   Active    24m
+```
+
+ - be aware that HTTP load balancing is enabled
+```bash
+~kubernetes$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
+Updating cluster-1...done.
+Updated [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
+```
 
  - deploy components and run services
 ```bash
@@ -1277,19 +1308,27 @@ deployment "mongo" created
 service "post-db" created
 ```
 
- - be aware that HTTP load balancing (inner [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)) is enabled
-```bash
-~kubernetes$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
-Updating cluster-1...done.
-Updated [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
-```
-
  - get external ip address for [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)
 ```bash
 ~kubernetes$ kubectl get ingress -n dev
 NAME      HOSTS     ADDRESS          PORTS     AGE
-ui        *         35.227.206.190   80        2m
+ui        *         35.227.242.167   80        2m
+
+~kubernetes$ kubectl describe ingress ui -n dev
+Name:             ui
+Namespace:        dev
+Address:
+Default backend:  default-http-backend:80 (10.16.1.5:8080)
+Rules:
+  Host  Path  Backends
+  ----  ----  --------
+  *
+        /   ui:9292 (<none>)
+Annotations:
+Events:
+  Type    Reason  Age   From                     Message
+  ----    ------  ----  ----                     -------
+  Normal  ADD     13s   loadbalancer-controller  dev/ui
 ```
 
- - open URL [http://\<ingress-ip\>:80>](http://\<external-ip\>:80>) and be aware component is available
- 
+ - open URL [http://\<ingress-ip\>:80>](http://\<ingress-ip\>:80>) and be aware components are available
