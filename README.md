@@ -1389,3 +1389,12 @@ Events:
 
  - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
  wait a few minutes until the initialization is completed
+
+
+---
+
+At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
+```bash
+~kubernetes$ gcloud container clusters delete cluster-1
+```
+
