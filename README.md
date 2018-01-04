@@ -1136,7 +1136,7 @@ This is service based on instances from `GCE`
    --num-nodes=2 \
    --no-enable-basic-auth
 Creating cluster cluster-1...done.
-Created [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
+Created [https://container.googleapis.com/v1/projects/<project_id>/zones/us-west1-c/clusters/cluster-1].
 kubeconfig entry generated for cluster-1.
 NAME       LOCATION    MASTER_VERSION  MASTER_IP      MACHINE_TYPE  NODE_VERSION  NUM_NODES  STATUS
 cluster-1  us-west1-c  1.8.3-gke.0     35.197.95.173  g1-small      1.8.3-gke.0   2          RUNNING
@@ -1146,7 +1146,7 @@ Fetching cluster endpoint and auth data.
 kubeconfig entry generated for cluster-1.
 
 ~minikube$ kubectl config current-context
-gke_kubernetes-188619_us-west1-c_cluster-1
+gke_<project_id>_us-west1-c_cluster-1
 ```
 
  - 2 worker nodes are basic `compute engine nodes`
@@ -1214,7 +1214,7 @@ ui           NodePort    10.19.249.191   <none>        9292:32092/TCP   2m      
  - create firewall rule to open range of ports for [Kubernetes](https://kubernetes.io) services
 ```bash
 ~minikube$ gcloud compute firewall-rules create default-k8s-ports\
- --project=kubernetes-188619 \
+ --project=<project_id> \
  --direction=INGRESS \
  --priority=1000 \
  --action=ALLOW \
@@ -1264,7 +1264,7 @@ help to manage one persistence storage for all PODs in the cluster.
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
 ~gke$ gcloud container clusters create cluster-1 \
-   --project kubernetes-188619 \
+   --project <project_id> \
    --cluster-version 1.8.3-gke.0 \
    --disk-size=20 \
    --machine-type=g1-small \
@@ -1289,7 +1289,7 @@ kube-system   Active    24m
 ```bash
 ~gke$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
 Updating cluster-1...done.
-Updated [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
+Updated [https://container.googleapis.com/v1/projects/<project_id>/zones/us-west1-c/clusters/cluster-1].
 ```
 
  - deploy components and run services
