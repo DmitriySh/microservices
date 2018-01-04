@@ -16,7 +16,7 @@ spec:
       component: mongo
   template:
     metadata:
-      name: mongo
+      name: mongo-pod
       labels:
         app: reddit
         component: mongo
@@ -27,9 +27,8 @@ spec:
       - image: mongo:3.2
         name: mongo
         volumeMounts:
-        - name: mongo-gce-pd-storage
+        - name: mongo-persistent-storage
           mountPath: /data/db
       volumes:
-      - name: mongo-gce-pd-storage
-        persistentVolumeClaim:
-          claimName: mongo-pvc-dynamic
+      - name: mongo-persistent-storage
+        emptyDir: {}
