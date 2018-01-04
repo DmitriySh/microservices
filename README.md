@@ -932,7 +932,7 @@ inside a VM on your desktop computer to try out [Kubernetes](https://kubernetes.
  
  - run small [Kubernetes](https://kubernetes.io) cluster of 1 node
 ```bash
-~kubernetes$ minikube start <--vm-driver=virtualbox>
+~minikube$ minikube start <--vm-driver=virtualbox>
 Starting local Kubernetes v1.8.0 cluster...
 Starting VM...
 Getting VM IP address...
@@ -944,7 +944,7 @@ Starting cluster components...
 Kubectl is now configured to use the cluster.
 Loading cached images from config file.
 
-~kubernetes$ minikube status
+~minikube$ minikube status
 minikube: Running
 cluster: Running
 kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
@@ -952,11 +952,11 @@ kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
 
  - `kubectl` was configured for this cluster and let's look at nodes and pods are running in the empty cluster
 ```bash
-~kubernetes$ kubectl get nodes
+~minikube$ kubectl get nodes
 NAME       STATUS    ROLES     AGE       VERSION
 minikube   Ready     <none>    56m       v1.8.0
 
-~kubernetes$ kubectl get pods --all-namespaces
+~minikube$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                          READY     STATUS    RESTARTS   AGE
 kube-system   kube-addon-manager-minikube   1/1       Running   0          56m
 kube-system   kube-dns-86f6f55dd5-dksv9     3/3       Running   0          56m
@@ -966,7 +966,7 @@ kube-system   storage-provisioner           1/1       Running   0          56m
 
  - `kubectl` could manage different clusters with different users by `context`
 ```bash
-~kubernetes$ cat ~/.kube/config
+~minikube$ cat ~/.kube/config
 apiVersion: v1
 clusters:
 - cluster:
@@ -988,7 +988,7 @@ users:
     client-certificate: /Users/dima/.minikube/client.crt
     client-key: /Users/dima/.minikube/client.key
     
-~kubernetes$ kubectl config get-contexts
+~minikube$ kubectl config get-contexts
 CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 *         minikube   minikube   minikube
 ```
@@ -997,19 +997,19 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 
  - apply deployments for all components
 ```bash
-~kubernetes$ kubectl apply -f ./comment/comment-deployment.yml -n dev
+~minikube$ kubectl apply -f ./comment/comment-deployment.yml -n dev
 deployment "comment" created
 
-~kubernetes$ kubectl apply -f ./post/post-deployment.yml -n dev
+~minikube$ kubectl apply -f ./post/post-deployment.yml -n dev
 deployment "post" created
 
-~kubernetes$ kubectl apply -f ./ui/ui-deployment.yml -n dev
+~minikube$ kubectl apply -f ./ui/ui-deployment.yml -n dev
 deployment "ui" created
 
-~kubernetes$ kubectl apply -f ./mongo/mongo-deployment.yml -n dev
+~minikube$ kubectl apply -f ./mongo/mongo-deployment.yml -n dev
 deployment "mongo" created
 
-~kubernetes$ kubectl get pods -o wide
+~minikube$ kubectl get pods -o wide
 NAME                       READY     STATUS    RESTARTS   AGE       IP            NODE
 comment-6576c99dfc-dgcls   1/1       Running   0          3m       172.17.0.6    minikube
 comment-6576c99dfc-fnzpx   1/1       Running   0          3m       172.17.0.4    minikube
@@ -1022,7 +1022,7 @@ ui-cd75bf6d5-4ffqx         1/1       Running   0          3m       172.17.0.13  
 ui-cd75bf6d5-czk8n         1/1       Running   0          3m       172.17.0.12   minikube
 ui-cd75bf6d5-nqthw         1/1       Running   0          3m       172.17.0.11   minikube
 
-~kubernetes$ kubectl get deployment
+~minikube$ kubectl get deployment
 NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 comment   3         3         3            3           2m
 mongo     1         1         1            1           2m
@@ -1032,13 +1032,13 @@ ui        3         3         3            3           2m
 
  - let's check out programs health into `pods` by forwarding local port to target port
 ```bash
-~kubernetes$ kubectl port-forward <ui-pod> 8080:9292
+~minikube$ kubectl port-forward <ui-pod> 8080:9292
 Forwarding from 127.0.0.1:8080 -> 9292
 
-~kubernetes$ kubectl port-forward <post-pod> 5000:5000
+~minikube$ kubectl port-forward <post-pod> 5000:5000
 Forwarding from 127.0.0.1:5000 -> 5000
 
-~kubernetes$ kubectl port-forward <comment-pod> 9292:9292
+~minikube$ kubectl port-forward <comment-pod> 9292:9292
 Forwarding from 127.0.0.1:9292 -> 9292 
 ```
 
@@ -1047,22 +1047,22 @@ Forwarding from 127.0.0.1:9292 -> 9292
 
  - [Kubernetes](https://kubernetes.io) services help to automates port forwarding for deployments
 ```bash
-~kubernetes$ kubectl apply -f ./ui/ui-service.yml
+~minikube$ kubectl apply -f ./ui/ui-service.yml
 service "ui" created
 
-~kubernetes$ kubectl apply -f ./post/post-service.yml
+~minikube$ kubectl apply -f ./post/post-service.yml
 service "post" created
 
-~kubernetes$ kubectl apply -f ./comment/comment-service.yml
+~minikube$ kubectl apply -f ./comment/comment-service.yml
 service "comment" created
 
-~kubernetes$ kubectl apply -f ./mongo/comment-mongodb-service.yml
+~minikube$ kubectl apply -f ./mongo/comment-mongodb-service.yml
 service "comment-db" created
 
-~kubernetes$ kubectl apply -f ./mongo/post-mongodb-service.yml
+~minikube$ kubectl apply -f ./mongo/post-mongodb-service.yml
 service "post-db" created
 
-~kubernetes$  kubectl get services -o wide
+~minikube$  kubectl get services -o wide
 NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE       SELECTOR
 comment      ClusterIP   10.103.177.123   <none>        9292/TCP         28m       app=reddit,component=comment
 comment-db   ClusterIP   10.99.107.79     <none>        27017/TCP        28m       app=reddit,comment-db=true,component=mongo
@@ -1074,7 +1074,7 @@ ui           NodePort    10.96.169.222    <none>        9292:32092/TCP   28m    
 
  - let's check out that `ui` could save posts and comments
 ```bash
-~kubernetes$ minikube service ui
+~minikube$ minikube service ui
 ```
 
 1.3) [Kubernetes](https://kubernetes.io) provides several addons. [Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui) 
@@ -1082,13 +1082,13 @@ is one of the addons that can be used to manage a cluster from UI, get detailed 
 
  - list of addons available from [Minikube](https://github.com/kubernetes/minikube)
 ```bash
-~kubernetes$ minikube addons list
+~minikube$ minikube addons list
 ```
 
  - enable `dashboard` and run it
 ```bash
-~kubernetes$ minikube addons enable dashboard
-~kubernetes$ minikube dashboard
+~minikube$ minikube addons enable dashboard
+~minikube$ minikube dashboard
 ```
 
 1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) is a virtual clusters 
@@ -1096,29 +1096,29 @@ with separate scope for names. It helps to divide cluster resources between mult
 
  - create new namespace `dev` and run `pods`, `services` into `dev`
 ```bash
-~kubernetes$ kubectl apply -f ./dev-namespace.yml
+~minikube$ kubectl apply -f ./dev-namespace.yml
 namespace "dev" created
 
-~kubernetes$ kubectl get namespaces
+~minikube$ kubectl get namespaces
 NAME          STATUS    AGE
 default       Active    5h
 dev           Active    3m
 kube-public   Active    5h
 kube-system   Active    5h
 
-~kubernetes$ kubectl -n dev apply -f ./deployments
-~kubernetes$ kubectl -n dev apply -f ./service
+~minikube$ kubectl -n dev apply -f ./deployments
+~minikube$ kubectl -n dev apply -f ./service
 ``` 
 
  - you need to change `nodePort` in `ui-service.yml` if you want to run `pods` and `services` into second `dev` namespace parallel `default`
 
 1.5) Stop and delete local [Kubernetes](https://kubernetes.io) cluster provided by [Minikube](https://github.com/kubernetes/minikube)
 ```bash
-~kubernetes$ minikube stop
+~minikube$ minikube stop
 Stopping local Kubernetes cluster...
 Machine stopped.
 
-~kubernetes$ minikube delete
+~minikube$ minikube delete
 Deleting local Kubernetes cluster...
 Machine deleted.
 ```
@@ -1128,7 +1128,7 @@ This is service based on instances from `GCE`
 
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
-~kubernetes$ gcloud container clusters create cluster-1 \
+~minikube$ gcloud container clusters create cluster-1 \
    --project <project_id> \
    --cluster-version 1.8.3-gke.0 \
    --disk-size=20 \
@@ -1141,17 +1141,17 @@ kubeconfig entry generated for cluster-1.
 NAME       LOCATION    MASTER_VERSION  MASTER_IP      MACHINE_TYPE  NODE_VERSION  NUM_NODES  STATUS
 cluster-1  us-west1-c  1.8.3-gke.0     35.197.95.173  g1-small      1.8.3-gke.0   2          RUNNING
 
-~kubernetes$ gcloud container clusters get-credentials cluster-1 --zone us-west1-c --project <project_id>
+~minikube$ gcloud container clusters get-credentials cluster-1 --zone us-west1-c --project <project_id>
 Fetching cluster endpoint and auth data.
 kubeconfig entry generated for cluster-1.
 
-~kubernetes$ kubectl config current-context
+~minikube$ kubectl config current-context
 gke_kubernetes-188619_us-west1-c_cluster-1
 ```
 
  - 2 worker nodes are basic `compute engine nodes`
 ```bash
-~kubernetes$ gcloud compute instances list
+~minikube$ gcloud compute instances list
 NAME                                      ZONE        MACHINE_TYPE  PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP    STATUS
 gke-cluster-1-default-pool-93c565d1-wx7r  us-west1-c  g1-small                   10.138.0.2   35.197.70.210  RUNNING
 gke-cluster-1-default-pool-93c565d1-z45m  us-west1-c  g1-small                   10.138.0.3   35.197.6.193   RUNNING
@@ -1159,10 +1159,10 @@ gke-cluster-1-default-pool-93c565d1-z45m  us-west1-c  g1-small                  
 
  - create custom namespace `dev`
 ```bash
-~kubernetes$ kubectl apply -f ./dev-namespace.yml
+~minikube$ kubectl apply -f ./dev-namespace.yml
 namespace "dev" created
 
-~ kubernetes$ kubectl get namespaces
+~minikube$ kubectl get namespaces
 NAME          STATUS    AGE
 default       Active    24m
 dev           Active    11s
@@ -1172,24 +1172,24 @@ kube-system   Active    24m
 
  - deploy components and run services
 ```bash
-~kubernetes$ kubectl apply -f ./comment -n dev
+~minikube$ kubectl apply -f ./comment -n dev
 deployment "comment" created
 service "comment" created
 
-~kubernetes$ kubectl apply -f ./post -n dev
+~minikube$ kubectl apply -f ./post -n dev
 deployment "post" created
 service "post" created
 
-~kubernetes$ kubectl apply -f ./ui -n dev
+~minikube$ kubectl apply -f ./ui -n dev
 deployment "ui" created
 service "ui" created
 
-~kubernetes$ kubectl apply -f ./mongo -n dev
+~minikube$ kubectl apply -f ./mongo -n dev
 service "comment-db" created
 deployment "mongo" created
 service "post-db" created
 
-~kubernetes$ kubectl get pods -n dev -o wide
+~minikube$ kubectl get pods -n dev -o wide
 NAME                      READY     STATUS    RESTARTS   AGE       IP           NODE
 comment-b986998b4-rcltn   1/1       Running   0          2m        10.16.1.8    gke-cluster-1-default-pool-93c565d1-z45m
 comment-b986998b4-vjv88   1/1       Running   0          2m        10.16.0.7    gke-cluster-1-default-pool-93c565d1-wx7r
@@ -1202,7 +1202,7 @@ ui-759c55c666-5kqbs       1/1       Running   0          1m        10.16.1.11   
 ui-759c55c666-64s5m       1/1       Running   0          1m        10.16.0.11   gke-cluster-1-default-pool-93c565d1-wx7r
 ui-759c55c666-jj6jn       1/1       Running   0          1m        10.16.1.12   gke-cluster-1-default-pool-93c565d1-z45m
 
-~kubernetes$ kubectl get services -n dev -o wide
+~minikube$ kubectl get services -n dev -o wide
 NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE       SELECTOR
 comment      ClusterIP   10.19.248.233   <none>        9292/TCP         2m        app=reddit,component=comment
 comment-db   ClusterIP   10.19.249.36    <none>        27017/TCP        2m        app=reddit,comment-db=true,component=mongo
@@ -1213,7 +1213,7 @@ ui           NodePort    10.19.249.191   <none>        9292:32092/TCP   2m      
 
  - create firewall rule to open range of ports for [Kubernetes](https://kubernetes.io) services
 ```bash
-~kubernetes$ gcloud compute firewall-rules create default-k8s-ports\
+~minikube$ gcloud compute firewall-rules create default-k8s-ports\
  --project=kubernetes-188619 \
  --direction=INGRESS \
  --priority=1000 \
@@ -1222,19 +1222,19 @@ ui           NodePort    10.19.249.191   <none>        9292:32092/TCP   2m      
  --rules=tcp:30000-32767 \
  --source-ranges=0.0.0.0/0
  
-~kubernetes$ gcloud compute firewall-rules list --filter k8s
+~minikube$ gcloud compute firewall-rules list --filter k8s
 NAME               NETWORK  DIRECTION  PRIORITY  ALLOW            DENY
 default-k8s-ports  default  INGRESS    1000      tcp:30000-32767
 ```
  
  - let's check availability `ui` component in [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/)
 ```bash
-~kubernetes$ kubectl get nodes -o wide
+~minikube$ kubectl get nodes -o wide
 NAME                                       STATUS    ROLES     AGE       VERSION        EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
 gke-cluster-1-default-pool-2b69dddc-257l   Ready     <none>    1h        v1.8.3-gke.0   35.225.188.134   Container-Optimized OS from Google   4.4.64+          docker://1.13.1
 gke-cluster-1-default-pool-2b69dddc-zwtm   Ready     <none>    1h        v1.8.3-gke.0   35.184.139.79    Container-Optimized OS from Google   4.4.64+          docker://1.13.1
 
-~kubernetes$ kubectl describe service ui -n dev | grep -i nodeport
+~minikube$ kubectl describe service ui -n dev | grep -i nodeport
 Type:                     NodePort
 NodePort:                 <unset>  32092/TCP
 ```
@@ -1246,7 +1246,7 @@ NodePort:                 <unset>  32092/TCP
 
 At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 ```bash
-~kubernetes$ gcloud container clusters delete cluster-1
+~minikube$ gcloud container clusters delete cluster-1
 ```
 
 
@@ -1263,7 +1263,7 @@ help to manage one persistence storage for all PODs in the cluster.
 
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
-~kubernetes$ gcloud container clusters create cluster-1 \
+~gke$ gcloud container clusters create cluster-1 \
    --project kubernetes-188619 \
    --cluster-version 1.8.3-gke.0 \
    --disk-size=20 \
@@ -1274,10 +1274,10 @@ help to manage one persistence storage for all PODs in the cluster.
 
  - create custom namespace `dev`
 ```bash
-~kubernetes$ kubectl apply -f ./dev-namespace.yml
+~gke$ kubectl apply -f ./dev-namespace.yml
 namespace "dev" created
 
-~ kubernetes$ kubectl get namespaces
+~gke$ kubectl get namespaces
 NAME          STATUS    AGE
 default       Active    24m
 dev           Active    11s
@@ -1287,27 +1287,27 @@ kube-system   Active    24m
 
  - be aware that HTTP load balancing is enabled
 ```bash
-~kubernetes$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
+~gke$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
 Updating cluster-1...done.
 Updated [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
 ```
 
  - deploy components and run services
 ```bash
-~kubernetes$ kubectl apply -f ./comment -n dev
+~gke$ kubectl apply -f ./comment -n dev
 deployment "comment" created
 service "comment" created
 
-~kubernetes$ kubectl apply -f ./post -n dev
+~gke$ kubectl apply -f ./post -n dev
 deployment "post" created
 service "post" created
 
-~kubernetes$ kubectl apply -f ./ui -n dev
+~gke$ kubectl apply -f ./ui -n dev
 deployment "ui" created
 ingress "ui" created
 service "ui" created
 
-~kubernetes$ kubectl apply -f ./mongo -n dev
+~gke$ kubectl apply -f ./mongo -n dev
 storageclass "fast" created
 service "comment-db" created
 service "post-db" created
@@ -1320,7 +1320,7 @@ persistentvolume "reddit-mongo-disk" created
 
  - let's check storage `PersistentVolume`
 ```bash
-~kubernetes$ kubectl get persistentvolume -n dev
+~gke$ kubectl get persistentvolume -n dev
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                   STORAGECLASS   REASON    AGE
 pvc-32d03f99-efef-11e7-8276-42010a8a009b   10Gi       RWO            Delete           Bound       dev/mongo-pvc-dynamic   fast                     11s
 pvc-dab87556-efeb-11e7-8276-42010a8a009b   15Gi       RWO            Delete           Bound       dev/mongo-pvc           standard                 24m
@@ -1329,24 +1329,24 @@ reddit-mongo-disk                          25Gi       RWO            Retain     
 
  - get external ip address for [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)
 ```bash
-~kubernetes$ kubectl get ingress -n dev
+~gke$ kubectl get ingress -n dev
 NAME      HOSTS     ADDRESS          PORTS     AGE
 ui        *         35.227.242.167   80        2m
 ```
 
  - add TLS encryption for transmission data in [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
 ```bash
-~kubernetes$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=<ingress-ip>"
+~gke$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=<ingress-ip>"
 Generating a 2048 bit RSA private key
 ........................................................+++
 ..............................................+++
 writing new private key to 'tls.key'
 -----
 
-~kubernetes$ kubectl create secret tls ui-ingress --key tls.key --cert tls.crt -n dev
+~gke$ kubectl create secret tls ui-ingress --key tls.key --cert tls.crt -n dev
 secret "ui-ingress" created
 
-~kubernetes$ kubectl describe secret ui-ingress -n dev
+~gke$ kubectl describe secret ui-ingress -n dev
 Name:         ui-ingress
 Namespace:    dev
 Labels:       <none>
@@ -1362,7 +1362,7 @@ tls.key:  1704 bytes
 
  - look at [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
 ```bash
-~kubernetes$ kubectl describe ingress ui -n dev
+~gke$ kubectl describe ingress ui -n dev
 Name:             ui
 Namespace:        dev
 Address:          35.227.206.190
@@ -1395,7 +1395,14 @@ Events:
 
 At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 ```bash
-~kubernetes$ gcloud container clusters delete cluster-1
-~kubernetes$ gcloud compute disks delete <name_1> <name_2> ... <name_N>
+~gke$ gcloud container clusters delete cluster-1
+~gke$ gcloud compute disks delete <name_1> <name_2> ... <name_N>
 ```
 
+
+## Homework 31
+
+ - 
+```bash
+~gke$ 
+```
