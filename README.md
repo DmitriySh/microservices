@@ -1402,7 +1402,97 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 
 ## Homework 31
 
- - 
+[Helm](https://github.com/kubernetes/helm) is a package manager for Kubernetes charts. Charts are packages that streamlines 
+installing and managing Kubernetes applications. `Helm` has two parts: a client (`helm`): work in desktop, CI/CD and a server 
+(`tiller`): work in `k8s` cluster. 
+
+ - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
-~gke$ 
+~helm$ gcloud container clusters create cluster-1 \
+   --project <project_id> \
+   --cluster-version 1.8.3-gke.0 \
+   --disk-size=20 \
+   --machine-type=g1-small \
+   --num-nodes=2 \
+   --no-enable-basic-auth
 ```
+
+ - install `Tiller` addon (pod) in the [Kubernetes](https://kubernetes.io) cluster
+```bash
+~helm$ kubectl apply -f ./tiller.yml
+serviceaccount "tiller" created
+clusterrolebinding "tiller" created
+
+~helm$ kubectl get serviceaccount -n kube-system | grep -i 'tiller'
+NAME                   SECRETS   AGE
+tiller                 1         13m
+
+~helm$ kubectl get clusterrolebinding -n kube-system | grep -i 'tiller'
+NAME                   AGE
+tiller                 1m
+```
+
+ - run `Tiller` addon (pod) by client `helm`
+```bash
+~helm$ helm init --service-account tiller
+ $HELM_HOME has been configured at /Users/dima/.helm.
+ Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+ Happy Helming!
+
+~helm$ kubectl get pods -n kube-system --selector app=helm
+NAME                             READY     STATUS    RESTARTS   AGE
+tiller-deploy-546cf9696c-jnm4g   1/1       Running   0          1m
+```
+
+ - let's deploy ui components by `helm`
+```bash
+~helm$ helm install --name ui-1 ./charts/ui
+~helm$ helm install --name ui-2 ./charts/ui
+~helm$ helm install --name ui-3 ./charts/ui
+NAME:   ui-3
+LAST DEPLOYED: Fri Jan  5 15:39:39 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1beta1/Ingress
+NAME     HOSTS  ADDRESS  PORTS  AGE
+ui-3-ui  *      80       1s
+==> v1/Service
+NAME     TYPE      CLUSTER-IP     EXTERNAL-IP  PORT(S)         AGE
+ui-3-ui  NodePort  10.19.252.178  <none>       9292:30312/TCP  1s
+==> v1beta1/Deployment
+
+NAME     DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+ui-3-ui  3        3        3           0          1s
+         
+~helm$ helm ls
+NAME	REVISION	UPDATED                 	STATUS  	CHART   	NAMESPACE
+ui-1	1       	Fri Jan  5 15:39:39 2018	DEPLOYED	ui-1.0.0	default
+ui-2	1       	Fri Jan  5 15:40:22 2018	DEPLOYED	ui-1.0.0	default
+ui-3	1       	Fri Jan  5 15:40:30 2018	DEPLOYED	ui-1.0.0	default
+```
+
+ - `helm` uses config from `~/.kube/config` and work with current [Kubernetes](https://kubernetes.io) cluster and namespace
+```bash
+~helm$ kubectl get pods
+NAME                       READY     STATUS    RESTARTS   AGE
+ui-1-ui-555fbf68d4-89hc6   1/1       Running   0          4m
+ui-1-ui-555fbf68d4-g6xmj   1/1       Running   0          4m
+ui-1-ui-555fbf68d4-ld86x   1/1       Running   0          4m
+ui-2-ui-6546657fd5-52c6h   1/1       Running   0          3m
+ui-2-ui-6546657fd5-8rpnc   1/1       Running   0          3m
+ui-2-ui-6546657fd5-d5p24   1/1       Running   0          3m
+ui-3-ui-84bff476c8-ghldh   0/1       Pending   0          3m
+ui-3-ui-84bff476c8-jgsqh   0/1       Pending   0          3m
+ui-3-ui-84bff476c8-x6b68   0/1       Pending   0          3m
+
+~helm$ kubectl get ingress
+NAME      HOSTS     ADDRESS          PORTS     AGE
+ui-1-ui   *         35.227.206.190   80        5m
+ui-2-ui   *         35.227.242.167   80        4m
+ui-3-ui   *         35.201.80.136    80        4m
+```
+
+ - 
+ 
