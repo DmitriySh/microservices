@@ -1402,7 +1402,7 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 
 ## Homework 31
 
-[Helm](https://github.com/kubernetes/helm) is a package manager for Kubernetes charts. Charts are packages that streamlines 
+[Helm](https://docs.helm.sh) is a package manager for Kubernetes charts. Charts are packages that streamlines 
 installing and managing Kubernetes applications. `Helm` has two parts: a client (`helm`): work in desktop, CI/CD and a server 
 (`tiller`): work in `k8s` cluster. 
 
