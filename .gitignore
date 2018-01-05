@@ -16,5 +16,5 @@
 
 # Kubernetes
 kubernetes/kubernetes_the_hard_way/auth
-kubernetes/*.crt
-kubernetes/*.key
+*.crt
+*.key
