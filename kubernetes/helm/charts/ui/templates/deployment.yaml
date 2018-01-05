@@ -8,7 +8,7 @@ metadata:
     component: ui
     release: {{ .Release.Name }}
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: Recreate
   selector:
@@ -25,10 +25,10 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - image: dashishmakov/ui
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         name: ui
         ports:
-        - containerPort: 9292
+        - containerPort: {{ .Values.service.internalPort }}
           name: ui
           protocol: TCP
         env:
