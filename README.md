@@ -1595,7 +1595,46 @@ gitlab	https://charts.gitlab.io
 ~helm/charts$ helm fetch gitlab/gitlab-omnibus --version 0.1.36 --untar
 ```
 
- - 
+ - edit file `gitlab-omnibus/values.yaml`
 ```bash
+baseDomain: example.com
+legoEmail: you@example.com
+```
 
+ - edit file `gitlab-omnibus/templates/gitlab/gitlab-svc.yaml`
+```bash
+spec:
+  selector:
+    name: {{ template "fullname" . }}
+  ports:
+...
+- name: prometheus
+  port: 9090
+  targetPort: prometheus
+- name: web
+  port: 80
+  targetPort: workhorse
+```
+
+ - edit file `gitlab-omnibus/templates/gitlab-config.yaml`
+```bash
+data:
+  external_scheme: http
+  external_hostname: {{ template "fullname" . }}
+```
+
+ - edit file 'gitlab-omnibus/templates/ingress/gitlab-ingress.yaml'
+```bash
+host: prometheus.{{ .Values.baseDomain }}
+```
+
+ - install [GitLab](https://about.gitlab.com) and get [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~helm/charts/gitlab-omnibus$ helm install --name gitlab . -f values.yaml
+
+~helm/charts/gitlab-omnibus$ kubectl get service  -n nginx-ingress nginx
+NAME      TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)                                   AGE
+nginx     LoadBalancer   10.19.252.81   35.227.152.5   80:31527/TCP,443:31037/TCP,22:31519/TCP   1m
+
+root# echo "35.227.152.5 gitlab-gitlab staging production" >> /etc/hosts
 ```
