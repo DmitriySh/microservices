@@ -1444,6 +1444,8 @@ NAME                             READY     STATUS    RESTARTS   AGE
 tiller-deploy-546cf9696c-jnm4g   1/1       Running   0          1m
 ```
 
+1.1) Deploy components separately by [Helm](https://docs.helm.sh)
+
  - let's deploy ui components by `helm`
 ```bash
 ~helm$ helm install --name ui-1 ./charts/ui
@@ -1488,7 +1490,16 @@ ui-3-ui   *         35.201.80.136    80        4m
 ~helm$ helm upgrade ui-N ./charts/ui
 ``` 
 
- - 
-```bash
+1.2) Unite all components and deploy by [Helm](https://docs.helm.sh)
 
+ - grab the latest versions of components for application
+```bash
+~helm$ helm dep update ./charts/reddit
+Hang tight while we grab the latest from your chart repositories...
+...Unable to get an update from the "local" chart repository (http://127.0.0.1:8879/charts):
+	Get http://127.0.0.1:8879/charts/index.yaml: dial tcp 127.0.0.1:8879: getsockopt: connection refused
+...Successfully got an update from the "stable" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 3 charts
+Deleting outdated charts
 ```
