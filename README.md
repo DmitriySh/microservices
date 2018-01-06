@@ -1410,9 +1410,9 @@ installing and managing Kubernetes applications. `Helm` has two parts: a client 
 ```bash
 ~helm$ gcloud container clusters create cluster-1 \
    --project <project_id> \
-   --cluster-version 1.8.3-gke.0 \
+   --cluster-version 1.8.4-gke.1 \
    --disk-size=20 \
-   --machine-type=g1-small \
+   --machine-type=n1-standard \
    --num-nodes=2 \
    --no-enable-basic-auth
 ```
@@ -1485,12 +1485,17 @@ ui-2-ui   *         35.227.242.167   80        4m
 ui-3-ui   *         35.201.80.136    80        4m
 ```
 
- - update pods if you change something in the manifest
+ - update pods if you change something in the manifests
 ```bash
 ~helm$ helm upgrade ui-N ./charts/ui
-``` 
+```
 
-1.2) Unite all components and deploy by [Helm](https://docs.helm.sh)
+ - delete pods
+```bash
+~helm$ helm delete $(helm ls -q)
+```
+
+1.2) Unite all components and deploy by [Helm](https://docs.helm.sh), it is easier to manage components in the cluster
 
  - grab the latest versions of components for application
 ```bash
@@ -1500,6 +1505,60 @@ Hang tight while we grab the latest from your chart repositories...
 	Get http://127.0.0.1:8879/charts/index.yaml: dial tcp 127.0.0.1:8879: getsockopt: connection refused
 ...Successfully got an update from the "stable" chart repository
 Update Complete. ⎈Happy Helming!⎈
-Saving 3 charts
+Saving 4 charts
+Downloading mongodb from repo https://kubernetes-charts.storage.googleapis.com
 Deleting outdated charts
 ```
+
+ - deploy all assembled dependencies
+```bash
+helm$ helm install --name reddit-test ./charts/reddit
+NAME:   reddit-test
+LAST DEPLOYED: Sat Jan  6 12:27:46 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Service
+NAME                 TYPE       CLUSTER-IP     EXTERNAL-IP  PORT(S)         AGE
+reddit-test-comment  ClusterIP  10.19.245.224  <none>       9292/TCP        2s
+reddit-test-mongodb  ClusterIP  10.19.254.3    <none>       27017/TCP       2s
+reddit-test-post     ClusterIP  10.19.243.154  <none>       5000/TCP        2s
+reddit-test-ui       NodePort   10.19.244.105  <none>       9292:31383/TCP  2s
+==> v1beta2/Deployment
+NAME                 DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+reddit-test-comment  1        1        1           0          2s
+reddit-test-post     1        1        1           0          2s
+==> v1beta1/Deployment
+reddit-test-mongodb  1  1  1  0  2s
+reddit-test-ui       1  1  1  0  2s
+==> v1beta1/Ingress
+NAME            HOSTS  ADDRESS  PORTS  AGE
+reddit-test-ui  *      80       2s
+==> v1/Pod(related)
+NAME                                  READY  STATUS   RESTARTS  AGE
+reddit-test-mongodb-779849ff89-pzrxs  0/1    Pending  0         2s
+==> v1/Secret
+NAME                 TYPE    DATA  AGE
+reddit-test-mongodb  Opaque  2     2s
+==> v1/PersistentVolumeClaim
+NAME                 STATUS   VOLUME    CAPACITY  ACCESS MODES  STORAGECLASS  AGE
+reddit-test-mongodb  Pending  standard  2s
+```
+
+ - upgrade deployment if you update some dependencies archives
+```bash
+~helm$ helm upgrade reddit-test ./charts/reddit
+```
+
+ - let's check [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~helm$ kubectl get ingress
+NAME             HOSTS     ADDRESS         PORTS     AGE
+reddit-test-ui   *         35.201.80.136   80        24m
+```
+
+ - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
+ wait a few minutes until the initialization is completed
+
+ - 
