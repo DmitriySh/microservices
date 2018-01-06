@@ -1,0 +1,20 @@
+comment:
+  image:
+    repository: dashishmakov/comment
+    tag: latest
+  service:
+    externalPort: 9292
+
+post:
+  image:
+    repository: dashishmakov/post
+    tag: latest
+    service:
+      externalPort: 5000
+
+ui:
+  image:
+    repository: dashishmakov/ui
+    tag: latest
+    service:
+      externalPort: 9292
