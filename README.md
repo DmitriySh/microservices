@@ -620,7 +620,7 @@ microservices_ui_1                 puma                             Up      0.0.
  Let's add WebHook for your own [Slack](https://slack.com) channel to get notifications in some accident cases.
  [Alertmanager](https://prometheus.io/docs/alerting/alertmanager/) is a component for [Prometheus](https://prometheus.io) that handle alerts and rote sufisticated notifications
 
- - new service `alertmanager` should be defined in `docker-compose.yml` and `prometheus.yml` that [Prometheus](https://prometheus.io) should to know about it 
+ - new service `alertmanager` should be defined in `docker-compose.yml` and `prometheus.yml` that [Prometheus](https://prometheus.io) should to know about it
  - edit `config.yml` and define your own `slack_api_url` and `receivers.slack_configs.channel`
  - build image of `alertmanager` and run container
 ```bash
@@ -658,7 +658,7 @@ At the end remove docker containers and remote instance of docker machine
 1.1) [Docker](https://www.docker.com/) include `swarm` mode for natively managing a cluster of Docker Engines called a [Docker Swarm](https://docs.docker.com/engine/swarm/).
 [Docker Swarm](https://docs.docker.com/engine/swarm/) available out of the box for cluster management and orchestration features.
 
- - create several instances in `GCE` by `docker-machine`. 
+ - create several instances in `GCE` by `docker-machine`.
 ```bash
 ~swarm$ docker-machine create --driver google \
    --google-project <project_id> \
@@ -746,7 +746,7 @@ whc2xwhg3rfvbzxp3icpirnd9     worker-2            Ready               Active
 1.2) [Docker Compose](https://docs.docker.com/compose) is a good tool for defining and running multi-container of Docker applications.
  [Docker Compose](https://docs.docker.com/compose) is the heart of [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
  and define stack of services for `swarm`
- 
+
  - let's deploy a new [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
 ```bash
 ~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) DEV
@@ -805,7 +805,7 @@ iwgd5gjlxfmk        DEV_post.2                                    dashishmakov/p
    --google-machine-type g1-small \
    --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
    worker-3
-   
+
 ~swarm$ docker swarm join-token worker
 To add a worker to this swarm, run the following command:
     docker swarm join --token SWMTKN-1-0wo27ownjz1zgw0zsbit5e7aa69r7td8a91tpvnu5m32cenbtp-bmrtyoioou9zupoc2w9sug6zv <master-1_internal_ip>:2377
@@ -844,10 +844,10 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 ```
 
  - increase min replica values and check again
- 
- 1.3) [Docker Swarm](https://docs.docker.com/engine/swarm/) has routing mesh, load balancer and decentralization architecture. 
+
+ 1.3) [Docker Swarm](https://docs.docker.com/engine/swarm/) has routing mesh, load balancer and decentralization architecture.
  It helps to route all requests between worker nodes in cluster. Do several requests on concrete host in example
- 
+
 ```bash
 ~swarm$ docker-machine ip $(docker-machine ls -q)
 <external_ip_master-1>
@@ -862,7 +862,7 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 <a class='navbar-brand' href='/'>Microservices Reddit in DEV 5d1bf5267ca2 container</a>
 ```
 
-1.4) Keep all services into the file `docker-compose.yml` and all infrastructure services to the file `docker-compose.infra.yml` 
+1.4) Keep all services into the file `docker-compose.yml` and all infrastructure services to the file `docker-compose.infra.yml`
 
 ```bash
 ~swarm$ docker stack rm DEV
@@ -885,12 +885,12 @@ At the end remove docker containers and remote instance of docker machine
 [Kubernetes](https://kubernetes.io) is a system for automating deployment, scaling, and management of containerized applications.
 It groups containers that make up an application into logical units for easy management and discovery.
 
-1.1) [Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) is a guide written by Kelsey Hightower, 
-Developer Advocate from [Google, Inc](https://www.google.com/intl/en_en/about/our-company/). 
+1.1) [Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) is a guide written by Kelsey Hightower,
+Developer Advocate from [Google, Inc](https://www.google.com/intl/en_en/about/our-company/).
 It is optimized for learning to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
-1.2) Deploy test pods in [Kubernetes](https://kubernetes.io) environment at the end of tutorial before chapter 
-[Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
+1.2) Deploy test pods in [Kubernetes](https://kubernetes.io) environment at the end of tutorial before chapter
+[Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md)
 ```bash
 ~kubernetes_the_hard_way$ kubectl apply -f ./deployments/post-deployment.yml
 ~kubernetes_the_hard_way$ kubectl apply -f ./deployments/comment-deployment.yml
@@ -914,22 +914,22 @@ ui-deployment-b9d9d4d9-ggfhk          1/1       Running             0          4
 ~kubernetes_the_hard_way$ kubectl config delete-context kubernetes-the-hard-way
 ~kubernetes_the_hard_way$ kubectl config delete-cluster kubernetes-the-hard-way
 ```
- - read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
+ - read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md)
 to delete compute resources created during this tutorial
 
 
 ## Homework 29
 
-Wide the knowledge about [Kubernetes](https://kubernetes.io). [Minikube](https://github.com/kubernetes/minikube) 
-is a tool that makes it easy to run [Kubernetes](https://kubernetes.io) locally. It runs a single-node [Kubernetes](https://kubernetes.io) cluster 
+Wide the knowledge about [Kubernetes](https://kubernetes.io). [Minikube](https://github.com/kubernetes/minikube)
+is a tool that makes it easy to run [Kubernetes](https://kubernetes.io) locally. It runs a single-node [Kubernetes](https://kubernetes.io) cluster
 inside a VM on your desktop computer to try out [Kubernetes](https://kubernetes.io).
 
-1.1) [Minikube](https://github.com/kubernetes/minikube) need one of virtalization: 
-[VirtualBox](https://www.virtualbox.org/wiki/Downloads) (default), 
-[KVM](https://www.linux-kvm.org/page/Main_Page), 
-[VMware Fusion](https://www.vmware.com/products/fusion.html), 
+1.1) [Minikube](https://github.com/kubernetes/minikube) need one of virtalization:
+[VirtualBox](https://www.virtualbox.org/wiki/Downloads) (default),
+[KVM](https://www.linux-kvm.org/page/Main_Page),
+[VMware Fusion](https://www.vmware.com/products/fusion.html),
 [xhyve](https://github.com/mist64/xhyve) or other. Will use [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
- 
+
  - run small [Kubernetes](https://kubernetes.io) cluster of 1 node
 ```bash
 ~minikube$ minikube start <--vm-driver=virtualbox>
@@ -987,7 +987,7 @@ users:
     as-user-extra: {}
     client-certificate: /Users/dima/.minikube/client.crt
     client-key: /Users/dima/.minikube/client.key
-    
+
 ~minikube$ kubectl config get-contexts
 CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 *         minikube   minikube   minikube
@@ -1039,10 +1039,10 @@ Forwarding from 127.0.0.1:8080 -> 9292
 Forwarding from 127.0.0.1:5000 -> 5000
 
 ~minikube$ kubectl port-forward <comment-pod> 9292:9292
-Forwarding from 127.0.0.1:9292 -> 9292 
+Forwarding from 127.0.0.1:9292 -> 9292
 ```
 
- - open URL [http://localhost:8080](http://localhost:8080), [http://localhost:5000/healthcheck](http://localhost:5000/healthcheck), 
+ - open URL [http://localhost:8080](http://localhost:8080), [http://localhost:5000/healthcheck](http://localhost:5000/healthcheck),
  [http://localhost:9292/healthcheck](http://localhost:9292/healthcheck) and test the apps
 
  - [Kubernetes](https://kubernetes.io) services help to automates port forwarding for deployments
@@ -1077,7 +1077,7 @@ ui           NodePort    10.96.169.222    <none>        9292:32092/TCP   28m    
 ~minikube$ minikube service ui
 ```
 
-1.3) [Kubernetes](https://kubernetes.io) provides several addons. [Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui) 
+1.3) [Kubernetes](https://kubernetes.io) provides several addons. [Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
 is one of the addons that can be used to manage a cluster from UI, get detailed information about state.
 
  - list of addons available from [Minikube](https://github.com/kubernetes/minikube)
@@ -1091,7 +1091,7 @@ is one of the addons that can be used to manage a cluster from UI, get detailed 
 ~minikube$ minikube dashboard
 ```
 
-1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) is a virtual clusters 
+1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) is a virtual clusters
 with separate scope for names. It helps to divide cluster resources between multiple users
 
  - create new namespace `dev` and run `pods`, `services` into `dev`
@@ -1108,7 +1108,7 @@ kube-system   Active    5h
 
 ~minikube$ kubectl -n dev apply -f ./deployments
 ~minikube$ kubectl -n dev apply -f ./service
-``` 
+```
 
  - you need to change `nodePort` in `ui-service.yml` if you want to run `pods` and `services` into second `dev` namespace parallel `default`
 
@@ -1221,12 +1221,12 @@ ui           NodePort    10.19.249.191   <none>        9292:32092/TCP   2m      
  --description="Range port for k8s" \
  --rules=tcp:30000-32767 \
  --source-ranges=0.0.0.0/0
- 
+
 ~minikube$ gcloud compute firewall-rules list --filter k8s
 NAME               NETWORK  DIRECTION  PRIORITY  ALLOW            DENY
 default-k8s-ports  default  INGRESS    1000      tcp:30000-32767
 ```
- 
+
  - let's check availability `ui` component in [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/)
 ```bash
 ~minikube$ kubectl get nodes -o wide
@@ -1254,12 +1254,12 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 
 [Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
 
-[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules 
-and configuration for routing external HTTP(S) traffic to internal cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers) 
+[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules
+and configuration for routing external HTTP(S) traffic to internal cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
 is an implementation.
 
-[Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) describe `PersistentVolume` and `PersistentVolumeClaim` that 
-help to manage one persistence storage for all PODs in the cluster. 
+[Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) describe `PersistentVolume` and `PersistentVolumeClaim` that
+help to manage one persistence storage for all PODs in the cluster.
 
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
@@ -1402,9 +1402,9 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 
 ## Homework 31
 
-[Helm](https://docs.helm.sh) is a package manager for Kubernetes charts. Charts are packages that streamlines 
-installing and managing Kubernetes applications. `Helm` has two parts: a client (`helm`): work in desktop, CI/CD and a server 
-(`tiller`): work in `k8s` cluster. 
+[Helm](https://docs.helm.sh) is a package manager for Kubernetes charts. Charts are packages that streamlines
+installing and managing Kubernetes applications. `Helm` has two parts: a client (`helm`): work in desktop, CI/CD and a server
+(`tiller`): work in `k8s` cluster.
 
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
@@ -1561,4 +1561,41 @@ reddit-test-ui   *         35.201.80.136   80        24m
  - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
  wait a few minutes until the initialization is completed
 
+1.3) [GitLab](https://about.gitlab.com) repository
+
+ - [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) could have a heterogeneous machine configuration
+in the cluster (not all nodes have equal machine type). Node pool is a collection of machines with the same configuration and
+we could have multiple node pools with different machine types in the cluster. Extend the pool of nodes in our cluster
+```bash
+~helm$ gcloud container node-pools create bigpool \
+   --cluster=cluster-1 \
+   --num-nodes=1 \
+   --machine-type=n1-standard-2 \
+   --disk-size=40
+
+~helm$ gcloud container node-pools list --cluster=cluster-1
+NAME          MACHINE_TYPE   DISK_SIZE_GB  NODE_VERSION
+default-pool  g1-small       20            1.8.3-gke.0
+bigpool       n1-standard-2  40            1.8.3-gke.0
+```
+
+ - add [GitLab](https://about.gitlab.com) repository
+```bash
+~helm$ helm repo add gitlab https://charts.gitlab.io
+
+helm$ helm repo list
+NAME  	URL
+stable	https://kubernetes-charts.storage.googleapis.com
+local 	http://127.0.0.1:8879/charts
+gitlab	https://charts.gitlab.io
+```
+
+ - download chart to get started with GitLab on Kubernetes
+```bash
+~helm/charts$ helm fetch gitlab/gitlab-omnibus --version 0.1.36 --untar
+```
+
  - 
+```bash
+
+```
