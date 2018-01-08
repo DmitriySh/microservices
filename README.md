@@ -1412,7 +1412,7 @@ installing and managing Kubernetes applications. `Helm` has two parts: a client 
    --project <project_id> \
    --cluster-version 1.8.4-gke.1 \
    --disk-size=20 \
-   --machine-type=n1-standard \
+   --machine-type=n1-standard-1 \
    --num-nodes=2 \
    --no-enable-basic-auth
 ```
@@ -1444,7 +1444,7 @@ NAME                             READY     STATUS    RESTARTS   AGE
 tiller-deploy-546cf9696c-jnm4g   1/1       Running   0          1m
 ```
 
-1.1) Deploy components separately by [Helm](https://docs.helm.sh)
+1.1) Let's do test deploy for `ui` components separately by [Helm](https://docs.helm.sh)
 
  - let's deploy ui components by `helm`
 ```bash
@@ -1492,7 +1492,7 @@ ui-3-ui   *         35.201.80.136    80        4m
 
  - delete pods
 ```bash
-~helm$ helm delete $(helm ls -q)
+~helm$ helm delete --purge $(helm ls -q)
 ```
 
 1.2) Unite all components and deploy by [Helm](https://docs.helm.sh), it is easier to manage components in the cluster
