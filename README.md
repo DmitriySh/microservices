@@ -1517,33 +1517,7 @@ NAME:   reddit-test
 LAST DEPLOYED: Sat Jan  6 12:27:46 2018
 NAMESPACE: default
 STATUS: DEPLOYED
-
-RESOURCES:
-==> v1/Service
-NAME                 TYPE       CLUSTER-IP     EXTERNAL-IP  PORT(S)         AGE
-reddit-test-comment  ClusterIP  10.19.245.224  <none>       9292/TCP        2s
-reddit-test-mongodb  ClusterIP  10.19.254.3    <none>       27017/TCP       2s
-reddit-test-post     ClusterIP  10.19.243.154  <none>       5000/TCP        2s
-reddit-test-ui       NodePort   10.19.244.105  <none>       9292:31383/TCP  2s
-==> v1beta2/Deployment
-NAME                 DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-reddit-test-comment  1        1        1           0          2s
-reddit-test-post     1        1        1           0          2s
-==> v1beta1/Deployment
-reddit-test-mongodb  1  1  1  0  2s
-reddit-test-ui       1  1  1  0  2s
-==> v1beta1/Ingress
-NAME            HOSTS  ADDRESS  PORTS  AGE
-reddit-test-ui  *      80       2s
-==> v1/Pod(related)
-NAME                                  READY  STATUS   RESTARTS  AGE
-reddit-test-mongodb-779849ff89-pzrxs  0/1    Pending  0         2s
-==> v1/Secret
-NAME                 TYPE    DATA  AGE
-reddit-test-mongodb  Opaque  2     2s
-==> v1/PersistentVolumeClaim
-NAME                 STATUS   VOLUME    CAPACITY  ACCESS MODES  STORAGECLASS  AGE
-reddit-test-mongodb  Pending  standard  2s
+...
 ```
 
  - upgrade deployment if you update some dependencies archives
@@ -1561,6 +1535,11 @@ reddit-test-ui   *         35.201.80.136   80        24m
  - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
  wait a few minutes until the initialization is completed
 
+ - delete pods
+```bash
+~helm$ helm delete --purge $(helm ls -q)
+```
+
 1.3) [GitLab](https://about.gitlab.com) repository
 
  - [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) could have a heterogeneous machine configuration
@@ -1571,12 +1550,17 @@ we could have multiple node pools with different machine types in the cluster. E
    --cluster=cluster-1 \
    --num-nodes=1 \
    --machine-type=n1-standard-2 \
-   --disk-size=40
+   --disk-size=60
 
 ~helm$ gcloud container node-pools list --cluster=cluster-1
 NAME          MACHINE_TYPE   DISK_SIZE_GB  NODE_VERSION
 default-pool  g1-small       20            1.8.3-gke.0
 bigpool       n1-standard-2  40            1.8.3-gke.0
+```
+
+ - enable legacy authorization for cluster to use with [GitLab Omnibus](https://docs.gitlab.com/omnibus/)
+```bash
+~helm$ gcloud beta container clusters update cluster-1 --enable-legacy-authorization
 ```
 
  - add [GitLab](https://about.gitlab.com) repository
@@ -1590,51 +1574,80 @@ local 	http://127.0.0.1:8879/charts
 gitlab	https://charts.gitlab.io
 ```
 
- - download chart to get started with GitLab on Kubernetes
+ - download chart to get started with [GitLab](https://about.gitlab.com) on [Kubernetes](https://kubernetes.io)
 ```bash
 ~helm/charts$ helm fetch gitlab/gitlab-omnibus --version 0.1.36 --untar
 ```
 
- - edit file `gitlab-omnibus/values.yaml`
+ - change part of file `gitlab-omnibus/values.yaml`
 ```bash
 baseDomain: example.com
 legoEmail: you@example.com
 ```
 
- - edit file `gitlab-omnibus/templates/gitlab/gitlab-svc.yaml`
+ - change part of file `gitlab-omnibus/templates/gitlab/gitlab-svc.yaml`
 ```bash
-spec:
-  selector:
-    name: {{ template "fullname" . }}
   ports:
-...
-- name: prometheus
-  port: 9090
-  targetPort: prometheus
-- name: web
-  port: 80
-  targetPort: workhorse
+    - name: ssh
+      port: 22
+      targetPort: ssh
+    - name: mattermost
+      port: 8065
+      targetPort: mattermost
+    - name: registry
+      port: 8105
+      targetPort: registry
+    - name: workhorse
+      port: 8005
+      targetPort: workhorse
+    - name: prometheus
+      port: 9090
+      targetPort: prometheus
+    - name: web
+      port: 80
+      targetPort: workhorse
 ```
 
- - edit file `gitlab-omnibus/templates/gitlab-config.yaml`
+ - change part of file `gitlab-omnibus/templates/gitlab-config.yaml`
 ```bash
 data:
   external_scheme: http
   external_hostname: {{ template "fullname" . }}
+  registry_external_scheme: https
+  registry_external_hostname: registry.{{ .Values.baseDomain }}
+  mattermost_external_scheme: https
+  mattermost_external_hostname: mattermost.{{ .Values.baseDomain }}
+  mattermost_app_uid: {{ .Values.mattermostAppUID }}
+  postgres_user: gitlab
+  postgres_db: gitlab_production
 ```
 
- - edit file 'gitlab-omnibus/templates/ingress/gitlab-ingress.yaml'
+ - change part of file  `gitlab-omnibus/templates/ingress/gitlab-ingress.yaml`
 ```bash
-host: prometheus.{{ .Values.baseDomain }}
+  rules:
+  - host: {{ template "fullname" . }}
 ```
 
- - install [GitLab](https://about.gitlab.com) and get [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+ - install [GitLab](https://about.gitlab.com)
 ```bash
 ~helm/charts/gitlab-omnibus$ helm install --name gitlab . -f values.yaml
+NAME:   gitlab
+LAST DEPLOYED: Mon Jan  8 18:05:52 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+...
+```
 
-~helm/charts/gitlab-omnibus$ kubectl get service  -n nginx-ingress nginx
+ - get external ip from [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+and add it in your local `/etc/hosts` with name `gitlab-gitlab`
+```bash
+~helm$ kubectl get service -n nginx-ingress nginx
 NAME      TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)                                   AGE
 nginx     LoadBalancer   10.19.252.81   35.227.152.5   80:31527/TCP,443:31037/TCP,22:31519/TCP   1m
 
 root# echo "35.227.152.5 gitlab-gitlab staging production" >> /etc/hosts
 ```
+
+ - open URL [http://gitlab-gitlab](http://gitlab-gitlab) and create new administrative `root` account;
+ wait a few minutes until the initialization is completed
+
