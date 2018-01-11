@@ -1,7 +1,6 @@
-from json import dumps
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-
+from json import dumps
 
 def health(mongo_host, mongo_port):
     postdb = MongoClient(mongo_host, int(mongo_port), serverSelectionTimeoutMS=2000)

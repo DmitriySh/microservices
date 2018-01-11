@@ -1,12 +1,11 @@
+from flask import Flask, request, Response
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+from bson.json_util import dumps
+from helpers import health
 import os
 import prometheus_client
 import time
-from bson.json_util import dumps
-from bson.objectid import ObjectId
-from flask import Flask, request, Response
-from pymongo import MongoClient
-
-from helpers import health
 
 CONTENT_TYPE_LATEST = str('text/plain; version=0.0.4; charset=utf-8')
 REQUEST_DB_LATENCY = prometheus_client.Histogram('post_read_db_seconds', 'Request DB time')
