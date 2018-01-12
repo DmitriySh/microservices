@@ -5,6 +5,7 @@ stages:
   - test
   - review
   - release
+  - cleanup
 
 build:
   stage: build
@@ -50,12 +51,33 @@ review:
   environment:
     name: review/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME
     url: http://$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
+    on_stop: stop_review
   only:
     refs:
       - branches
     kubernetes: active
   except:
     - master
+
+stop_review:
+  stage: cleanup
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - install_dependencies
+    - delete
+  environment:
+    name: review/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME
+    action: stop
+  when: manual
+  allow_failure: true
+  only:
+    refs:
+      - branches
+    kubernetes: active
+  except:
+    - master
+
 
 .auto_devops: &auto_devops |
   [[ "$TRACE" ]] && set -x
@@ -64,6 +86,12 @@ review:
   export CI_APPLICATION_TAG=$CI_COMMIT_REF_SLUG
   export CI_CONTAINER_NAME=ci_job_build_${CI_JOB_ID}
   export TILLER_NAMESPACE="kube-system"
+
+  function delete() {
+    track="${1-stable}"
+    name="$CI_ENVIRONMENT_SLUG"
+    helm delete "$name" --purge || true
+  }
 
   function deploy() {
     track="${1-stable}"
