@@ -1,0 +1,17 @@
+---
+service:
+  internalPort: 9292
+  externalPort: 9292
+
+image:
+  repository: dashishmakov/ui
+  tag: latest
+
+ingress:
+  class: nginx
+
+# defined in the env
+postHost:
+postPort:
+commentHost:
+commentPort:

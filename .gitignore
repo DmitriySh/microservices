@@ -16,3 +16,8 @@
 
 # Kubernetes
 kubernetes/kubernetes_the_hard_way/auth
+*.crt
+*.key
+**/charts/*.tgz
+**/requirements.lock
+**/gitlab-omnibus/*

@@ -620,7 +620,7 @@ microservices_ui_1                 puma                             Up      0.0.
  Let's add WebHook for your own [Slack](https://slack.com) channel to get notifications in some accident cases.
  [Alertmanager](https://prometheus.io/docs/alerting/alertmanager/) is a component for [Prometheus](https://prometheus.io) that handle alerts and rote sufisticated notifications
 
- - new service `alertmanager` should be defined in `docker-compose.yml` and `prometheus.yml` that [Prometheus](https://prometheus.io) should to know about it 
+ - new service `alertmanager` should be defined in `docker-compose.yml` and `prometheus.yml` that [Prometheus](https://prometheus.io) should to know about it
  - edit `config.yml` and define your own `slack_api_url` and `receivers.slack_configs.channel`
  - build image of `alertmanager` and run container
 ```bash
@@ -658,7 +658,7 @@ At the end remove docker containers and remote instance of docker machine
 1.1) [Docker](https://www.docker.com/) include `swarm` mode for natively managing a cluster of Docker Engines called a [Docker Swarm](https://docs.docker.com/engine/swarm/).
 [Docker Swarm](https://docs.docker.com/engine/swarm/) available out of the box for cluster management and orchestration features.
 
- - create several instances in `GCE` by `docker-machine`. 
+ - create several instances in `GCE` by `docker-machine`.
 ```bash
 ~swarm$ docker-machine create --driver google \
    --google-project <project_id> \
@@ -746,7 +746,7 @@ whc2xwhg3rfvbzxp3icpirnd9     worker-2            Ready               Active
 1.2) [Docker Compose](https://docs.docker.com/compose) is a good tool for defining and running multi-container of Docker applications.
  [Docker Compose](https://docs.docker.com/compose) is the heart of [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
  and define stack of services for `swarm`
- 
+
  - let's deploy a new [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack/)
 ```bash
 ~swarm$ docker stack deploy --compose-file=<(docker-compose -f docker-compose.yml config 2>/dev/null) DEV
@@ -805,7 +805,7 @@ iwgd5gjlxfmk        DEV_post.2                                    dashishmakov/p
    --google-machine-type g1-small \
    --google-machine-image $(gcloud compute images list --filter ubuntu-1604-lts --uri) \
    worker-3
-   
+
 ~swarm$ docker swarm join-token worker
 To add a worker to this swarm, run the following command:
     docker swarm join --token SWMTKN-1-0wo27ownjz1zgw0zsbit5e7aa69r7td8a91tpvnu5m32cenbtp-bmrtyoioou9zupoc2w9sug6zv <master-1_internal_ip>:2377
@@ -844,10 +844,10 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 ```
 
  - increase min replica values and check again
- 
- 1.3) [Docker Swarm](https://docs.docker.com/engine/swarm/) has routing mesh, load balancer and decentralization architecture. 
+
+ 1.3) [Docker Swarm](https://docs.docker.com/engine/swarm/) has routing mesh, load balancer and decentralization architecture.
  It helps to route all requests between worker nodes in cluster. Do several requests on concrete host in example
- 
+
 ```bash
 ~swarm$ docker-machine ip $(docker-machine ls -q)
 <external_ip_master-1>
@@ -862,7 +862,7 @@ pt2fhi36b036eo2yvbm8giplk     worker-3            Ready               Active
 <a class='navbar-brand' href='/'>Microservices Reddit in DEV 5d1bf5267ca2 container</a>
 ```
 
-1.4) Keep all services into the file `docker-compose.yml` and all infrastructure services to the file `docker-compose.infra.yml` 
+1.4) Keep all services into the file `docker-compose.yml` and all infrastructure services to the file `docker-compose.infra.yml`
 
 ```bash
 ~swarm$ docker stack rm DEV
@@ -885,12 +885,12 @@ At the end remove docker containers and remote instance of docker machine
 [Kubernetes](https://kubernetes.io) is a system for automating deployment, scaling, and management of containerized applications.
 It groups containers that make up an application into logical units for easy management and discovery.
 
-1.1) [Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) is a guide written by Kelsey Hightower, 
-Developer Advocate from [Google, Inc](https://www.google.com/intl/en_en/about/our-company/). 
+1.1) [Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) is a guide written by Kelsey Hightower,
+Developer Advocate from [Google, Inc](https://www.google.com/intl/en_en/about/our-company/).
 It is optimized for learning to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
-1.2) Deploy test pods in [Kubernetes](https://kubernetes.io) environment at the end of tutorial before chapter 
-[Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
+1.2) Deploy test pods in [Kubernetes](https://kubernetes.io) environment at the end of tutorial before chapter
+[Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md)
 ```bash
 ~kubernetes_the_hard_way$ kubectl apply -f ./deployments/post-deployment.yml
 ~kubernetes_the_hard_way$ kubectl apply -f ./deployments/comment-deployment.yml
@@ -914,25 +914,25 @@ ui-deployment-b9d9d4d9-ggfhk          1/1       Running             0          4
 ~kubernetes_the_hard_way$ kubectl config delete-context kubernetes-the-hard-way
 ~kubernetes_the_hard_way$ kubectl config delete-cluster kubernetes-the-hard-way
 ```
- - read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md) 
+ - read chapter [Cleaning Up](https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/14-cleanup.md)
 to delete compute resources created during this tutorial
 
 
 ## Homework 29
 
-Wide the knowledge about [Kubernetes](https://kubernetes.io). [Minikube](https://github.com/kubernetes/minikube) 
-is a tool that makes it easy to run [Kubernetes](https://kubernetes.io) locally. It runs a single-node [Kubernetes](https://kubernetes.io) cluster 
+Wide the knowledge about [Kubernetes](https://kubernetes.io). [Minikube](https://github.com/kubernetes/minikube)
+is a tool that makes it easy to run [Kubernetes](https://kubernetes.io) locally. It runs a single-node [Kubernetes](https://kubernetes.io) cluster
 inside a VM on your desktop computer to try out [Kubernetes](https://kubernetes.io).
 
-1.1) [Minikube](https://github.com/kubernetes/minikube) need one of virtalization: 
-[VirtualBox](https://www.virtualbox.org/wiki/Downloads) (default), 
-[KVM](https://www.linux-kvm.org/page/Main_Page), 
-[VMware Fusion](https://www.vmware.com/products/fusion.html), 
+1.1) [Minikube](https://github.com/kubernetes/minikube) need one of virtalization:
+[VirtualBox](https://www.virtualbox.org/wiki/Downloads) (default),
+[KVM](https://www.linux-kvm.org/page/Main_Page),
+[VMware Fusion](https://www.vmware.com/products/fusion.html),
 [xhyve](https://github.com/mist64/xhyve) or other. Will use [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
- 
+
  - run small [Kubernetes](https://kubernetes.io) cluster of 1 node
 ```bash
-~kubernetes$ minikube start <--vm-driver=virtualbox>
+~minikube$ minikube start <--vm-driver=virtualbox>
 Starting local Kubernetes v1.8.0 cluster...
 Starting VM...
 Getting VM IP address...
@@ -944,7 +944,7 @@ Starting cluster components...
 Kubectl is now configured to use the cluster.
 Loading cached images from config file.
 
-~kubernetes$ minikube status
+~minikube$ minikube status
 minikube: Running
 cluster: Running
 kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
@@ -952,11 +952,11 @@ kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
 
  - `kubectl` was configured for this cluster and let's look at nodes and pods are running in the empty cluster
 ```bash
-~kubernetes$ kubectl get nodes
+~minikube$ kubectl get nodes
 NAME       STATUS    ROLES     AGE       VERSION
 minikube   Ready     <none>    56m       v1.8.0
 
-~kubernetes$ kubectl get pods --all-namespaces
+~minikube$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                          READY     STATUS    RESTARTS   AGE
 kube-system   kube-addon-manager-minikube   1/1       Running   0          56m
 kube-system   kube-dns-86f6f55dd5-dksv9     3/3       Running   0          56m
@@ -966,7 +966,7 @@ kube-system   storage-provisioner           1/1       Running   0          56m
 
  - `kubectl` could manage different clusters with different users by `context`
 ```bash
-~kubernetes$ cat ~/.kube/config
+~minikube$ cat ~/.kube/config
 apiVersion: v1
 clusters:
 - cluster:
@@ -987,8 +987,8 @@ users:
     as-user-extra: {}
     client-certificate: /Users/dima/.minikube/client.crt
     client-key: /Users/dima/.minikube/client.key
-    
-~kubernetes$ kubectl config get-contexts
+
+~minikube$ kubectl config get-contexts
 CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 *         minikube   minikube   minikube
 ```
@@ -997,19 +997,19 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 
  - apply deployments for all components
 ```bash
-~kubernetes$ kubectl apply -f ./comment/comment-deployment.yml -n dev
+~minikube$ kubectl apply -f ./comment/comment-deployment.yml -n dev
 deployment "comment" created
 
-~kubernetes$ kubectl apply -f ./post/post-deployment.yml -n dev
+~minikube$ kubectl apply -f ./post/post-deployment.yml -n dev
 deployment "post" created
 
-~kubernetes$ kubectl apply -f ./ui/ui-deployment.yml -n dev
+~minikube$ kubectl apply -f ./ui/ui-deployment.yml -n dev
 deployment "ui" created
 
-~kubernetes$ kubectl apply -f ./mongo/mongo-deployment.yml -n dev
+~minikube$ kubectl apply -f ./mongo/mongo-deployment.yml -n dev
 deployment "mongo" created
 
-~kubernetes$ kubectl get pods -o wide
+~minikube$ kubectl get pods -o wide
 NAME                       READY     STATUS    RESTARTS   AGE       IP            NODE
 comment-6576c99dfc-dgcls   1/1       Running   0          3m       172.17.0.6    minikube
 comment-6576c99dfc-fnzpx   1/1       Running   0          3m       172.17.0.4    minikube
@@ -1022,7 +1022,7 @@ ui-cd75bf6d5-4ffqx         1/1       Running   0          3m       172.17.0.13  
 ui-cd75bf6d5-czk8n         1/1       Running   0          3m       172.17.0.12   minikube
 ui-cd75bf6d5-nqthw         1/1       Running   0          3m       172.17.0.11   minikube
 
-~kubernetes$ kubectl get deployment
+~minikube$ kubectl get deployment
 NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 comment   3         3         3            3           2m
 mongo     1         1         1            1           2m
@@ -1032,37 +1032,37 @@ ui        3         3         3            3           2m
 
  - let's check out programs health into `pods` by forwarding local port to target port
 ```bash
-~kubernetes$ kubectl port-forward <ui-pod> 8080:9292
+~minikube$ kubectl port-forward <ui-pod> 8080:9292
 Forwarding from 127.0.0.1:8080 -> 9292
 
-~kubernetes$ kubectl port-forward <post-pod> 5000:5000
+~minikube$ kubectl port-forward <post-pod> 5000:5000
 Forwarding from 127.0.0.1:5000 -> 5000
 
-~kubernetes$ kubectl port-forward <comment-pod> 9292:9292
-Forwarding from 127.0.0.1:9292 -> 9292 
+~minikube$ kubectl port-forward <comment-pod> 9292:9292
+Forwarding from 127.0.0.1:9292 -> 9292
 ```
 
- - open URL [http://localhost:8080](http://localhost:8080), [http://localhost:5000/healthcheck](http://localhost:5000/healthcheck), 
+ - open URL [http://localhost:8080](http://localhost:8080), [http://localhost:5000/healthcheck](http://localhost:5000/healthcheck),
  [http://localhost:9292/healthcheck](http://localhost:9292/healthcheck) and test the apps
 
  - [Kubernetes](https://kubernetes.io) services help to automates port forwarding for deployments
 ```bash
-~kubernetes$ kubectl apply -f ./ui/ui-service.yml
+~minikube$ kubectl apply -f ./ui/ui-service.yml
 service "ui" created
 
-~kubernetes$ kubectl apply -f ./post/post-service.yml
+~minikube$ kubectl apply -f ./post/post-service.yml
 service "post" created
 
-~kubernetes$ kubectl apply -f ./comment/comment-service.yml
+~minikube$ kubectl apply -f ./comment/comment-service.yml
 service "comment" created
 
-~kubernetes$ kubectl apply -f ./mongo/comment-mongodb-service.yml
+~minikube$ kubectl apply -f ./mongo/comment-mongodb-service.yml
 service "comment-db" created
 
-~kubernetes$ kubectl apply -f ./mongo/post-mongodb-service.yml
+~minikube$ kubectl apply -f ./mongo/post-mongodb-service.yml
 service "post-db" created
 
-~kubernetes$  kubectl get services -o wide
+~minikube$  kubectl get services -o wide
 NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE       SELECTOR
 comment      ClusterIP   10.103.177.123   <none>        9292/TCP         28m       app=reddit,component=comment
 comment-db   ClusterIP   10.99.107.79     <none>        27017/TCP        28m       app=reddit,comment-db=true,component=mongo
@@ -1074,51 +1074,51 @@ ui           NodePort    10.96.169.222    <none>        9292:32092/TCP   28m    
 
  - let's check out that `ui` could save posts and comments
 ```bash
-~kubernetes$ minikube service ui
+~minikube$ minikube service ui
 ```
 
-1.3) [Kubernetes](https://kubernetes.io) provides several addons. [Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui) 
+1.3) [Kubernetes](https://kubernetes.io) provides several addons. [Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
 is one of the addons that can be used to manage a cluster from UI, get detailed information about state.
 
  - list of addons available from [Minikube](https://github.com/kubernetes/minikube)
 ```bash
-~kubernetes$ minikube addons list
+~minikube$ minikube addons list
 ```
 
  - enable `dashboard` and run it
 ```bash
-~kubernetes$ minikube addons enable dashboard
-~kubernetes$ minikube dashboard
+~minikube$ minikube addons enable dashboard
+~minikube$ minikube dashboard
 ```
 
-1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) is a virtual clusters 
+1.4) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) is a virtual clusters
 with separate scope for names. It helps to divide cluster resources between multiple users
 
  - create new namespace `dev` and run `pods`, `services` into `dev`
 ```bash
-~kubernetes$ kubectl apply -f ./dev-namespace.yml
+~minikube$ kubectl apply -f ./dev-namespace.yml
 namespace "dev" created
 
-~kubernetes$ kubectl get namespaces
+~minikube$ kubectl get namespaces
 NAME          STATUS    AGE
 default       Active    5h
 dev           Active    3m
 kube-public   Active    5h
 kube-system   Active    5h
 
-~kubernetes$ kubectl -n dev apply -f ./deployments
-~kubernetes$ kubectl -n dev apply -f ./service
-``` 
+~minikube$ kubectl -n dev apply -f ./deployments
+~minikube$ kubectl -n dev apply -f ./service
+```
 
  - you need to change `nodePort` in `ui-service.yml` if you want to run `pods` and `services` into second `dev` namespace parallel `default`
 
 1.5) Stop and delete local [Kubernetes](https://kubernetes.io) cluster provided by [Minikube](https://github.com/kubernetes/minikube)
 ```bash
-~kubernetes$ minikube stop
+~minikube$ minikube stop
 Stopping local Kubernetes cluster...
 Machine stopped.
 
-~kubernetes$ minikube delete
+~minikube$ minikube delete
 Deleting local Kubernetes cluster...
 Machine deleted.
 ```
@@ -1128,7 +1128,7 @@ This is service based on instances from `GCE`
 
  - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
 ```bash
-~kubernetes$ gcloud container clusters create cluster-1 \
+~minikube$ gcloud container clusters create cluster-1 \
    --project <project_id> \
    --cluster-version 1.8.3-gke.0 \
    --disk-size=20 \
@@ -1136,22 +1136,22 @@ This is service based on instances from `GCE`
    --num-nodes=2 \
    --no-enable-basic-auth
 Creating cluster cluster-1...done.
-Created [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
+Created [https://container.googleapis.com/v1/projects/<project_id>/zones/us-west1-c/clusters/cluster-1].
 kubeconfig entry generated for cluster-1.
 NAME       LOCATION    MASTER_VERSION  MASTER_IP      MACHINE_TYPE  NODE_VERSION  NUM_NODES  STATUS
 cluster-1  us-west1-c  1.8.3-gke.0     35.197.95.173  g1-small      1.8.3-gke.0   2          RUNNING
 
-~kubernetes$ gcloud container clusters get-credentials cluster-1 --zone us-west1-c --project <project_id>
+~minikube$ gcloud container clusters get-credentials cluster-1 --zone us-west1-c --project <project_id>
 Fetching cluster endpoint and auth data.
 kubeconfig entry generated for cluster-1.
 
-~kubernetes$ kubectl config current-context
-gke_kubernetes-188619_us-west1-c_cluster-1
+~minikube$ kubectl config current-context
+gke_<project_id>_us-west1-c_cluster-1
 ```
 
  - 2 worker nodes are basic `compute engine nodes`
 ```bash
-~kubernetes$ gcloud compute instances list
+~minikube$ gcloud compute instances list
 NAME                                      ZONE        MACHINE_TYPE  PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP    STATUS
 gke-cluster-1-default-pool-93c565d1-wx7r  us-west1-c  g1-small                   10.138.0.2   35.197.70.210  RUNNING
 gke-cluster-1-default-pool-93c565d1-z45m  us-west1-c  g1-small                   10.138.0.3   35.197.6.193   RUNNING
@@ -1159,10 +1159,10 @@ gke-cluster-1-default-pool-93c565d1-z45m  us-west1-c  g1-small                  
 
  - create custom namespace `dev`
 ```bash
-~kubernetes$ kubectl apply -f ./dev-namespace.yml
+~minikube$ kubectl apply -f ./dev-namespace.yml
 namespace "dev" created
 
-~ kubernetes$ kubectl get namespaces
+~minikube$ kubectl get namespaces
 NAME          STATUS    AGE
 default       Active    24m
 dev           Active    11s
@@ -1172,24 +1172,24 @@ kube-system   Active    24m
 
  - deploy components and run services
 ```bash
-~kubernetes$ kubectl apply -f ./comment -n dev
+~minikube$ kubectl apply -f ./comment -n dev
 deployment "comment" created
 service "comment" created
 
-~kubernetes$ kubectl apply -f ./post -n dev
+~minikube$ kubectl apply -f ./post -n dev
 deployment "post" created
 service "post" created
 
-~kubernetes$ kubectl apply -f ./ui -n dev
+~minikube$ kubectl apply -f ./ui -n dev
 deployment "ui" created
 service "ui" created
 
-~kubernetes$ kubectl apply -f ./mongo -n dev
+~minikube$ kubectl apply -f ./mongo -n dev
 service "comment-db" created
 deployment "mongo" created
 service "post-db" created
 
-~kubernetes$ kubectl get pods -n dev -o wide
+~minikube$ kubectl get pods -n dev -o wide
 NAME                      READY     STATUS    RESTARTS   AGE       IP           NODE
 comment-b986998b4-rcltn   1/1       Running   0          2m        10.16.1.8    gke-cluster-1-default-pool-93c565d1-z45m
 comment-b986998b4-vjv88   1/1       Running   0          2m        10.16.0.7    gke-cluster-1-default-pool-93c565d1-wx7r
@@ -1202,7 +1202,7 @@ ui-759c55c666-5kqbs       1/1       Running   0          1m        10.16.1.11   
 ui-759c55c666-64s5m       1/1       Running   0          1m        10.16.0.11   gke-cluster-1-default-pool-93c565d1-wx7r
 ui-759c55c666-jj6jn       1/1       Running   0          1m        10.16.1.12   gke-cluster-1-default-pool-93c565d1-z45m
 
-~kubernetes$ kubectl get services -n dev -o wide
+~minikube$ kubectl get services -n dev -o wide
 NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE       SELECTOR
 comment      ClusterIP   10.19.248.233   <none>        9292/TCP         2m        app=reddit,component=comment
 comment-db   ClusterIP   10.19.249.36    <none>        27017/TCP        2m        app=reddit,comment-db=true,component=mongo
@@ -1213,28 +1213,28 @@ ui           NodePort    10.19.249.191   <none>        9292:32092/TCP   2m      
 
  - create firewall rule to open range of ports for [Kubernetes](https://kubernetes.io) services
 ```bash
-~kubernetes$ gcloud compute firewall-rules create default-k8s-ports\
- --project=kubernetes-188619 \
+~minikube$ gcloud compute firewall-rules create default-k8s-ports\
+ --project=<project_id> \
  --direction=INGRESS \
  --priority=1000 \
  --action=ALLOW \
  --description="Range port for k8s" \
  --rules=tcp:30000-32767 \
  --source-ranges=0.0.0.0/0
- 
-~kubernetes$ gcloud compute firewall-rules list --filter k8s
+
+~minikube$ gcloud compute firewall-rules list --filter k8s
 NAME               NETWORK  DIRECTION  PRIORITY  ALLOW            DENY
 default-k8s-ports  default  INGRESS    1000      tcp:30000-32767
 ```
- 
+
  - let's check availability `ui` component in [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/)
 ```bash
-~kubernetes$ kubectl get nodes -o wide
+~minikube$ kubectl get nodes -o wide
 NAME                                       STATUS    ROLES     AGE       VERSION        EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
 gke-cluster-1-default-pool-2b69dddc-257l   Ready     <none>    1h        v1.8.3-gke.0   35.225.188.134   Container-Optimized OS from Google   4.4.64+          docker://1.13.1
 gke-cluster-1-default-pool-2b69dddc-zwtm   Ready     <none>    1h        v1.8.3-gke.0   35.184.139.79    Container-Optimized OS from Google   4.4.64+          docker://1.13.1
 
-~kubernetes$ kubectl describe service ui -n dev | grep -i nodeport
+~minikube$ kubectl describe service ui -n dev | grep -i nodeport
 Type:                     NodePort
 NodePort:                 <unset>  32092/TCP
 ```
@@ -1246,5 +1246,408 @@ NodePort:                 <unset>  32092/TCP
 
 At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 ```bash
-~kubernetes$ gcloud container clusters delete cluster-1
+~minikube$ gcloud container clusters delete cluster-1
 ```
+
+
+## Homework 30
+
+[Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
+
+[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules
+and configuration for routing external HTTP(S) traffic to internal cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+is an implementation.
+
+[Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) describe `PersistentVolume` and `PersistentVolumeClaim` that
+help to manage one persistence storage for all PODs in the cluster.
+
+ - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
+```bash
+~gke$ gcloud container clusters create cluster-1 \
+   --project <project_id> \
+   --cluster-version 1.8.3-gke.0 \
+   --disk-size=20 \
+   --machine-type=g1-small \
+   --num-nodes=2 \
+   --no-enable-basic-auth
+```
+
+ - create custom namespace `dev`
+```bash
+~gke$ kubectl apply -f ./dev-namespace.yml
+namespace "dev" created
+
+~gke$ kubectl get namespaces
+NAME          STATUS    AGE
+default       Active    24m
+dev           Active    11s
+kube-public   Active    24m
+kube-system   Active    24m
+```
+
+ - be aware that HTTP load balancing is enabled
+```bash
+~gke$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
+Updating cluster-1...done.
+Updated [https://container.googleapis.com/v1/projects/<project_id>/zones/us-west1-c/clusters/cluster-1].
+```
+
+ - deploy components and run services
+```bash
+~gke$ kubectl apply -f ./comment -n dev
+deployment "comment" created
+service "comment" created
+
+~gke$ kubectl apply -f ./post -n dev
+deployment "post" created
+service "post" created
+
+~gke$ kubectl apply -f ./ui -n dev
+deployment "ui" created
+ingress "ui" created
+service "ui" created
+
+~gke$ kubectl apply -f ./mongo -n dev
+storageclass "fast" created
+service "comment-db" created
+service "post-db" created
+persistentvolumeclaim "mongo-pvc-dynamic" created
+persistentvolumeclaim "mongo-pvc" created
+deployment "mongo" created
+networkpolicy "deny-db-traffic" created
+persistentvolume "reddit-mongo-disk" created
+```
+
+ - let's check storage `PersistentVolume`
+```bash
+~gke$ kubectl get persistentvolume -n dev
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                   STORAGECLASS   REASON    AGE
+pvc-32d03f99-efef-11e7-8276-42010a8a009b   10Gi       RWO            Delete           Bound       dev/mongo-pvc-dynamic   fast                     11s
+pvc-dab87556-efeb-11e7-8276-42010a8a009b   15Gi       RWO            Delete           Bound       dev/mongo-pvc           standard                 24m
+reddit-mongo-disk                          25Gi       RWO            Retain           Available                                                    24m
+```
+
+ - get external ip address for [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)
+```bash
+~gke$ kubectl get ingress -n dev
+NAME      HOSTS     ADDRESS          PORTS     AGE
+ui        *         35.227.242.167   80        2m
+```
+
+ - add TLS encryption for transmission data in [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~gke$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=<ingress-ip>"
+Generating a 2048 bit RSA private key
+........................................................+++
+..............................................+++
+writing new private key to 'tls.key'
+-----
+
+~gke$ kubectl create secret tls ui-ingress --key tls.key --cert tls.crt -n dev
+secret "ui-ingress" created
+
+~gke$ kubectl describe secret ui-ingress -n dev
+Name:         ui-ingress
+Namespace:    dev
+Labels:       <none>
+Annotations:  <none>
+
+Type:  kubernetes.io/tls
+
+Data
+====
+tls.crt:  989 bytes
+tls.key:  1704 bytes
+```
+
+ - look at [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~gke$ kubectl describe ingress ui -n dev
+Name:             ui
+Namespace:        dev
+Address:          35.227.206.190
+Default backend:  ui:9292 (10.16.0.15:9292,10.16.1.16:9292,10.16.1.17:9292)
+TLS:
+  ui-ingress terminates
+Rules:
+  Host  Path  Backends
+  ----  ----  --------
+  *     *     ui:9292 (10.16.0.15:9292,10.16.1.16:9292,10.16.1.17:9292)
+Annotations:
+  backends:               {"k8s-be-30838--902e46559c424f67":"HEALTHY"}
+  https-forwarding-rule:  k8s-fws-dev-ui--902e46559c424f67
+  https-target-proxy:     k8s-tps-dev-ui--902e46559c424f67
+  ssl-cert:               k8s-ssl-dev-ui--902e46559c424f67
+  url-map:                k8s-um-dev-ui--902e46559c424f67
+Events:
+  Type    Reason   Age               From                     Message
+  ----    ------   ----              ----                     -------
+  Normal  ADD      13m               loadbalancer-controller  dev/ui
+  Normal  CREATE   12m               loadbalancer-controller  ip: 35.227.206.190
+  Normal  Service  5m (x5 over 12m)  loadbalancer-controller  default backend set to ui:30838
+```
+
+ - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
+ wait a few minutes until the initialization is completed
+
+
+---
+
+At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
+```bash
+~gke$ gcloud container clusters delete cluster-1
+~gke$ gcloud compute disks delete <name_1> <name_2> ... <name_N>
+```
+
+
+## Homework 31
+
+[Helm](https://docs.helm.sh) is a package manager for Kubernetes charts. Charts are packages that streamlines
+installing and managing Kubernetes applications. `Helm` has two parts: a client (`helm`): work in desktop, CI/CD and a server
+(`tiller`): work in `k8s` cluster.
+
+ - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
+```bash
+~helm$ gcloud container clusters create cluster-1 \
+   --project <project_id> \
+   --cluster-version 1.8.4-gke.1 \
+   --disk-size=20 \
+   --machine-type=n1-standard-1 \
+   --num-nodes=2 \
+   --no-enable-basic-auth
+```
+
+ - install `Tiller` addon (pod) in the [Kubernetes](https://kubernetes.io) cluster
+```bash
+~helm$ kubectl apply -f ./tiller.yml
+serviceaccount "tiller" created
+clusterrolebinding "tiller" created
+
+~helm$ kubectl get serviceaccount -n kube-system | grep -i 'tiller'
+NAME                   SECRETS   AGE
+tiller                 1         13m
+
+~helm$ kubectl get clusterrolebinding -n kube-system | grep -i 'tiller'
+NAME                   AGE
+tiller                 1m
+```
+
+ - run `Tiller` addon (pod) by client `helm`
+```bash
+~helm$ helm init --service-account tiller
+ $HELM_HOME has been configured at /Users/dima/.helm.
+ Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+ Happy Helming!
+
+~helm$ kubectl get pods -n kube-system --selector app=helm
+NAME                             READY     STATUS    RESTARTS   AGE
+tiller-deploy-546cf9696c-jnm4g   1/1       Running   0          1m
+```
+
+1.1) Let's do test deploy for `ui` components separately by [Helm](https://docs.helm.sh)
+
+ - let's deploy ui components by `helm`
+```bash
+~helm$ helm install --name ui-1 ./charts/ui
+...
+~helm$ helm install --name ui-2 ./charts/ui
+...
+~helm$ helm install --name ui-3 ./charts/ui
+Release "ui-3" has been upgraded. Happy Helming!
+LAST DEPLOYED: Fri Jan  5 17:31:50 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Service
+NAME     TYPE      CLUSTER-IP     EXTERNAL-IP  PORT(S)         AGE
+ui-3-ui  NodePort  10.19.249.126  <none>       9292:32033/TCP  56m
+==> v1beta1/Deployment
+NAME     DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+ui-3-ui  1        1        1           0          56m
+==> v1beta1/Ingress
+NAME     HOSTS  ADDRESS        PORTS  AGE
+ui-3-ui  *      35.201.80.136  80     56m
+```
+
+ - `helm` uses config from `~/.kube/config` and work with current [Kubernetes](https://kubernetes.io) cluster and namespace
+```bash
+~helm$ kubectl get pods
+NAME                       READY     STATUS    RESTARTS   AGE
+ui-1-ui-b97d7cb7f-r7lnb    1/1       Running   0          1m
+ui-2-ui-c8cdb6cfb-9qn97    1/1       Running   0          1m
+ui-3-ui-75b8bd66f7-jgkr5   1/1       Running   0          2m
+
+~helm$ kubectl get ingress
+NAME      HOSTS     ADDRESS          PORTS     AGE
+ui-1-ui   *         35.227.206.190   80        5m
+ui-2-ui   *         35.227.242.167   80        4m
+ui-3-ui   *         35.201.80.136    80        4m
+```
+
+ - update pods if you change something in the manifests
+```bash
+~helm$ helm upgrade ui-N ./charts/ui
+```
+
+ - delete pods
+```bash
+~helm$ helm delete --purge $(helm ls -q)
+```
+
+1.2) Unite all components and deploy by [Helm](https://docs.helm.sh), it is easier to manage components in the cluster
+
+ - grab the latest versions of components for application
+```bash
+~helm$ helm dep update ./charts/reddit
+Hang tight while we grab the latest from your chart repositories...
+...Unable to get an update from the "local" chart repository (http://127.0.0.1:8879/charts):
+	Get http://127.0.0.1:8879/charts/index.yaml: dial tcp 127.0.0.1:8879: getsockopt: connection refused
+...Successfully got an update from the "stable" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 4 charts
+Downloading mongodb from repo https://kubernetes-charts.storage.googleapis.com
+Deleting outdated charts
+```
+
+ - deploy all assembled dependencies
+```bash
+helm$ helm install --name reddit-test ./charts/reddit
+NAME:   reddit-test
+LAST DEPLOYED: Sat Jan  6 12:27:46 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+...
+```
+
+ - upgrade deployment if you update some dependencies archives
+```bash
+~helm$ helm upgrade reddit-test ./charts/reddit
+```
+
+ - let's check [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~helm$ kubectl get ingress
+NAME             HOSTS     ADDRESS         PORTS     AGE
+reddit-test-ui   *         35.201.80.136   80        24m
+```
+
+ - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
+ wait a few minutes until the initialization is completed
+
+ - delete pods
+```bash
+~helm$ helm delete --purge $(helm ls -q)
+```
+
+1.3) [GitLab](https://about.gitlab.com) repository
+
+ - [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) could have a heterogeneous machine configuration
+in the cluster (not all nodes have equal machine type). Node pool is a collection of machines with the same configuration and
+we could have multiple node pools with different machine types in the cluster. Extend the pool of nodes in our cluster
+```bash
+~helm$ gcloud container node-pools create bigpool \
+   --cluster=cluster-1 \
+   --num-nodes=1 \
+   --machine-type=n1-standard-2 \
+   --disk-size=60
+
+~helm$ gcloud container node-pools list --cluster=cluster-1
+NAME          MACHINE_TYPE   DISK_SIZE_GB  NODE_VERSION
+default-pool  g1-small       20            1.8.3-gke.0
+bigpool       n1-standard-2  40            1.8.3-gke.0
+```
+
+ - enable legacy authorization for cluster to use with [GitLab Omnibus](https://docs.gitlab.com/omnibus/)
+```bash
+~helm$ gcloud beta container clusters update cluster-1 --enable-legacy-authorization
+```
+
+ - add [GitLab](https://about.gitlab.com) repository
+```bash
+~helm$ helm repo add gitlab https://charts.gitlab.io
+
+helm$ helm repo list
+NAME  	URL
+stable	https://kubernetes-charts.storage.googleapis.com
+local 	http://127.0.0.1:8879/charts
+gitlab	https://charts.gitlab.io
+```
+
+ - download chart to get started with [GitLab](https://about.gitlab.com) on [Kubernetes](https://kubernetes.io)
+```bash
+~helm/charts$ helm fetch gitlab/gitlab-omnibus --version 0.1.36 --untar
+```
+
+ - change part of file `gitlab-omnibus/values.yaml`
+```bash
+baseDomain: example.com
+legoEmail: you@example.com
+```
+
+ - change part of file `gitlab-omnibus/templates/gitlab/gitlab-svc.yaml`
+```bash
+  ports:
+    - name: ssh
+      port: 22
+      targetPort: ssh
+    - name: mattermost
+      port: 8065
+      targetPort: mattermost
+    - name: registry
+      port: 8105
+      targetPort: registry
+    - name: workhorse
+      port: 8005
+      targetPort: workhorse
+    - name: prometheus
+      port: 9090
+      targetPort: prometheus
+    - name: web
+      port: 80
+      targetPort: workhorse
+```
+
+ - change part of file `gitlab-omnibus/templates/gitlab-config.yaml`
+```bash
+data:
+  external_scheme: http
+  external_hostname: {{ template "fullname" . }}
+  registry_external_scheme: https
+  registry_external_hostname: registry.{{ .Values.baseDomain }}
+  mattermost_external_scheme: https
+  mattermost_external_hostname: mattermost.{{ .Values.baseDomain }}
+  mattermost_app_uid: {{ .Values.mattermostAppUID }}
+  postgres_user: gitlab
+  postgres_db: gitlab_production
+```
+
+ - change part of file  `gitlab-omnibus/templates/ingress/gitlab-ingress.yaml`
+```bash
+  rules:
+  - host: {{ template "fullname" . }}
+```
+
+ - install [GitLab](https://about.gitlab.com)
+```bash
+~helm/charts/gitlab-omnibus$ helm install --name gitlab . -f values.yaml
+NAME:   gitlab
+LAST DEPLOYED: Mon Jan  8 18:05:52 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+...
+```
+
+ - get external ip from [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+and add it in your local `/etc/hosts` with name `gitlab-gitlab`
+```bash
+~helm$ kubectl get service -n nginx-ingress nginx
+NAME      TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)                                   AGE
+nginx     LoadBalancer   10.19.252.81   35.227.152.5   80:31527/TCP,443:31037/TCP,22:31519/TCP   1m
+
+root# echo "35.227.152.5 gitlab-gitlab staging production" >> /etc/hosts
+```
+
+ - open URL [http://gitlab-gitlab](http://gitlab-gitlab) and create new administrative `root` account;
+ wait a few minutes until the initialization is completed
+
