@@ -4,7 +4,7 @@ service:
   externalPort: 9292
 
 image:
-  repository: chromko/ui
+  repository: dashishmakov/ui
   tag: latest
 
 ingress:
