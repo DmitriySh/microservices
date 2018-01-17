@@ -1248,3 +1248,154 @@ At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
 ```bash
 ~kubernetes$ gcloud container clusters delete cluster-1
 ```
+
+
+## Homework 30
+
+[Kubernetes](https://kubernetes.io) service determines endpoints and communication types (clusterIP, nodePort, loadBalancer, externalName).
+
+[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) is a collection of rules 
+and configuration for routing external HTTP(S) traffic to internal cluster services. [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers) 
+is an implementation.
+
+[Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) describe `PersistentVolume` and `PersistentVolumeClaim` that 
+help to manage one persistence storage for all PODs in the cluster. 
+
+ - create [Kubernetes](https://kubernetes.io) cluster in `GCE` and connect with `kubectl`
+```bash
+~kubernetes$ gcloud container clusters create cluster-1 \
+   --project kubernetes-188619 \
+   --cluster-version 1.8.3-gke.0 \
+   --disk-size=20 \
+   --machine-type=g1-small \
+   --num-nodes=2 \
+   --no-enable-basic-auth
+```
+
+ - create custom namespace `dev`
+```bash
+~kubernetes$ kubectl apply -f ./dev-namespace.yml
+namespace "dev" created
+
+~ kubernetes$ kubectl get namespaces
+NAME          STATUS    AGE
+default       Active    24m
+dev           Active    11s
+kube-public   Active    24m
+kube-system   Active    24m
+```
+
+ - be aware that HTTP load balancing is enabled
+```bash
+~kubernetes$ gcloud container clusters update cluster-1 --update-addons=HttpLoadBalancing=ENABLED
+Updating cluster-1...done.
+Updated [https://container.googleapis.com/v1/projects/kubernetes-188619/zones/us-west1-c/clusters/cluster-1].
+```
+
+ - deploy components and run services
+```bash
+~kubernetes$ kubectl apply -f ./comment -n dev
+deployment "comment" created
+service "comment" created
+
+~kubernetes$ kubectl apply -f ./post -n dev
+deployment "post" created
+service "post" created
+
+~kubernetes$ kubectl apply -f ./ui -n dev
+deployment "ui" created
+ingress "ui" created
+service "ui" created
+
+~kubernetes$ kubectl apply -f ./mongo -n dev
+storageclass "fast" created
+service "comment-db" created
+service "post-db" created
+persistentvolumeclaim "mongo-pvc-dynamic" created
+persistentvolumeclaim "mongo-pvc" created
+deployment "mongo" created
+networkpolicy "deny-db-traffic" created
+persistentvolume "reddit-mongo-disk" created
+```
+
+ - let's check storage `PersistentVolume`
+```bash
+~kubernetes$ kubectl get persistentvolume -n dev
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                   STORAGECLASS   REASON    AGE
+pvc-32d03f99-efef-11e7-8276-42010a8a009b   10Gi       RWO            Delete           Bound       dev/mongo-pvc-dynamic   fast                     11s
+pvc-dab87556-efeb-11e7-8276-42010a8a009b   15Gi       RWO            Delete           Bound       dev/mongo-pvc           standard                 24m
+reddit-mongo-disk                          25Gi       RWO            Retain           Available                                                    24m
+```
+
+ - get external ip address for [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress)
+```bash
+~kubernetes$ kubectl get ingress -n dev
+NAME      HOSTS     ADDRESS          PORTS     AGE
+ui        *         35.227.242.167   80        2m
+```
+
+ - add TLS encryption for transmission data in [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~kubernetes$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=<ingress-ip>"
+Generating a 2048 bit RSA private key
+........................................................+++
+..............................................+++
+writing new private key to 'tls.key'
+-----
+
+~kubernetes$ kubectl create secret tls ui-ingress --key tls.key --cert tls.crt -n dev
+secret "ui-ingress" created
+
+~kubernetes$ kubectl describe secret ui-ingress -n dev
+Name:         ui-ingress
+Namespace:    dev
+Labels:       <none>
+Annotations:  <none>
+
+Type:  kubernetes.io/tls
+
+Data
+====
+tls.crt:  989 bytes
+tls.key:  1704 bytes
+```
+
+ - look at [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers)
+```bash
+~kubernetes$ kubectl describe ingress ui -n dev
+Name:             ui
+Namespace:        dev
+Address:          35.227.206.190
+Default backend:  ui:9292 (10.16.0.15:9292,10.16.1.16:9292,10.16.1.17:9292)
+TLS:
+  ui-ingress terminates
+Rules:
+  Host  Path  Backends
+  ----  ----  --------
+  *     *     ui:9292 (10.16.0.15:9292,10.16.1.16:9292,10.16.1.17:9292)
+Annotations:
+  backends:               {"k8s-be-30838--902e46559c424f67":"HEALTHY"}
+  https-forwarding-rule:  k8s-fws-dev-ui--902e46559c424f67
+  https-target-proxy:     k8s-tps-dev-ui--902e46559c424f67
+  ssl-cert:               k8s-ssl-dev-ui--902e46559c424f67
+  url-map:                k8s-um-dev-ui--902e46559c424f67
+Events:
+  Type    Reason   Age               From                     Message
+  ----    ------   ----              ----                     -------
+  Normal  ADD      13m               loadbalancer-controller  dev/ui
+  Normal  CREATE   12m               loadbalancer-controller  ip: 35.227.206.190
+  Normal  Service  5m (x5 over 12m)  loadbalancer-controller  default backend set to ui:30838
+```
+
+ - open URL [https://\<ingress-ip\>:80>](https://\<ingress-ip\>:80>) and be aware components are available;
+ wait a few minutes until the initialization is completed
+
+
+---
+
+At the end remove [Kubernetes](https://kubernetes.io) cluster and clear context
+```bash
+~kubernetes$ gcloud container clusters delete cluster-1
+~kubernetes$ gcloud compute disks delete <name_1> <name_2> ... <name_N>
+```
+
